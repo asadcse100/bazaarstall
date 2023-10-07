@@ -19,7 +19,6 @@ use Auth;
 use Mail;
 use App\Mail\InvoiceEmailManager;
 use App\Utility\NotificationUtility;
-use CoreComponentRepository;
 use App\Utility\SmsUtility;
 use Illuminate\Support\Facades\Route;
 
@@ -37,8 +36,6 @@ class OrderController extends Controller
     // All Orders
     public function all_orders(Request $request)
     {
-        CoreComponentRepository::instantiateShopRepository();
-
         $date = $request->date;
         $sort_search = null;
         $delivery_status = null;
