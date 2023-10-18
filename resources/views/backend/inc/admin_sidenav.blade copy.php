@@ -231,7 +231,8 @@
                 @endif
 
                 <!-- Wholesale Product -->
-
+                @if(addon_is_activated('wholesale'))
+                    @canany(['add_wholesale_product','view_all_wholesale_products','view_inhouse_wholesale_products','view_sellers_wholesale_products'])
                         <li class="aiz-side-nav-item">
                             <a href="#" class="aiz-side-nav-link">
                                 <i class="las la-luggage-cart aiz-side-nav-icon"></i>
@@ -269,7 +270,8 @@
                                 @endcan
                             </ul>
                         </li>
-
+                    @endcanany
+                @endif
 
                 <!-- Sale -->
                 @canany(['view_all_orders', 'view_inhouse_orders','view_seller_orders','view_pickup_point_orders'])
