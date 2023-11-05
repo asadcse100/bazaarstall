@@ -28,12 +28,12 @@
                         <p class="font-weight-bold">
                             {{ strip_tags($query->question) }}
                         </p>
-                        <p>
+                        {{-- <p>
                             {{ strip_tags($query->reply) }}
-                        </p>
+                        </p> --}}
                     </li>
                 </ul>
-                @if ((Auth::user()->id == $query->seller_id || Auth::user()->user_type == 'staff') && $query->reply == null && auth()->user()->can('reply_to_product_queries'))
+                @if ((Auth::user()->id == $query->seller_id || Auth::user()->user_type == 'staff') && auth()->user()->can('reply_to_product_queries'))
                     <form action="{{ route('product_query.reply', $query->id) }}" method="POST">
                         @method('put')
                         @csrf
@@ -41,12 +41,12 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <textarea class="form-control" rows="4" name="reply" placeholder="{{ translate('Type your reply') }}"
-                                    required></textarea>
+                                    required>{{ $query->reply }}</textarea>
                             </div>
                         </div>
                         <br>
                         <div class="text-right">
-                            <button type="submit" class="btn btn-info">{{ translate('Send') }}</button>
+                            <button type="submit" class="btn btn-info">{{  $query->reply == null ? translate('Send') : translate('Update') }}</button>
                         </div>
                     </form>
                 @endif

@@ -6,10 +6,6 @@
         @php
             $product_url = route('product', $product->slug);
             if ($product->auction_product == 1) {
-                $cart = get_user_cart();
-                if (isset($cart) && count($cart) > 0) {
-                    $cart_added = $cart->pluck('product_id')->toArray();
-                }
                 $product_url = route('auction-product', $product->slug);
             }
         @endphp
@@ -75,6 +71,10 @@
                 $product->auction_end_date >= strtotime('now'))
             <!-- Place Bid -->
             @php
+                $carts = get_user_cart();
+                if (count($carts) > 0) {
+                    $cart_added = $carts->pluck('product_id')->toArray();
+                }
                 $highest_bid = $product->bids->max('amount');
                 $min_bid_amount = $highest_bid != null ? $highest_bid + 1 : $product->starting_bid;
             @endphp

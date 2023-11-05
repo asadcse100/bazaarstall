@@ -39,19 +39,6 @@
                                 <input type="text" class="form-control" name="name" placeholder="{{translate('Product Name')}}" value="{{ $product->getTranslation('name', $lang) }}" required>
                             </div>
                         </div>
-                        <div class="form-group row" id="category">
-                            <label class="col-lg-3 col-from-label">{{translate('Category')}}</label>
-                            <div class="col-lg-8">
-                                <select class="form-control aiz-selectpicker" name="category_id" id="category_id" data-selected="{{ $product->category_id }}" data-live-search="true" required>
-                                    @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->getTranslation('name') }}</option>
-                                    @foreach ($category->childrenCategories as $childCategory)
-                                    @include('categories.child_category', ['child_category' => $childCategory])
-                                    @endforeach
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
                         <div class="form-group row" id="brand">
                             <label class="col-lg-3 col-from-label">{{translate('Brand')}}</label>
                             <div class="col-lg-8">
@@ -144,40 +131,6 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- <div class="form-group row">
-                                                    <label class="col-lg-3 col-from-label">{{translate('Gallery Images')}}</label>
-                        <div class="col-lg-8">
-                            <div id="photos">
-                                @if(is_array(json_decode($product->photos)))
-                                @foreach (json_decode($product->photos) as $key => $photo)
-                                <div class="col-md-4 col-sm-4 col-xs-6">
-                                    <div class="img-upload-preview">
-                                        <img loading="lazy"  src="{{ uploaded_asset($photo) }}" alt="" class="img-responsive">
-                                            <input type="hidden" name="previous_photos[]" value="{{ $photo }}">
-                                            <button type="button" class="btn btn-danger close-btn remove-files"><i class="fa fa-times"></i></button>
-                                    </div>
-                                </div>
-                                @endforeach
-                                @endif
-                            </div>
-                        </div>
-                    </div> --}}
-                        {{-- <div class="form-group row">
-                            <label class="col-lg-3 col-from-label">{{translate('Thumbnail Image')}} <small>(290x300)</small></label>
-                            <div class="col-lg-8">
-                                <div id="thumbnail_img">
-                                    @if ($product->thumbnail_img != null)
-                                    <div class="col-md-4 col-sm-4 col-xs-6">
-                                        <div class="img-upload-preview">
-                                            <img loading="lazy"  src="{{ uploaded_asset($product->thumbnail_img) }}" alt="" class="img-responsive">
-                                            <input type="hidden" name="previous_thumbnail_img" value="{{ $product->thumbnail_img }}">
-                                            <button type="button" class="btn btn-danger close-btn remove-files"><i class="fa fa-times"></i></button>
-                                        </div>
-                                    </div>
-                                    @endif
-                                </div>
-                            </div>
-                        </div> --}}
                     </div>
                 </div>
                 <div class="card">
@@ -373,15 +326,6 @@
                     </div>
                 </div>
 
-<!--                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0 h6">{{translate('Product Shipping Cost')}}</h5>
-                    </div>
-                    <div class="card-body">
-
-                    </div>
-                </div>-->
-
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0 h6">{{translate('PDF Specification')}}</h5>
@@ -445,6 +389,33 @@
             </div>
 
             <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0 h6">{{ translate('Product Category') }}</h5>
+                        <h6 class="float-right fs-13 mb-0">
+                            {{ translate('Select Main') }}
+                            <span class="position-relative main-category-info-icon">
+                                <i class="las la-question-circle fs-18 text-info"></i>
+                                <span class="main-category-info bg-soft-info p-2 position-absolute d-none border">{{ translate('This will be used for commission based calculations and homepage category wise product Show.') }}</span>
+                            </span>
+                        </h6>
+                    </div>
+                    <div class="card-body ">
+                        <div class="h-300px overflow-auto c-scrollbar-light">
+                            @php
+                                $old_categories = $product->categories()->pluck('category_id')->toArray();
+                            @endphp
+                            <ul class="hummingbird-treeview-converter list-unstyled" data-checkbox-name="category_ids[]" data-radio-name="category_id">
+                                @foreach ($categories as $category)
+                                <li id="{{ $category->id }}">{{ $category->name }}</li>
+                                    @foreach ($category->childrenCategories as $childCategory)
+                                        @include('backend.product.products.child_category', ['child_category' => $childCategory])
+                                    @endforeach
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="card">
                     <div class="card-header">
@@ -731,7 +702,6 @@
                         @endforeach
                     </div>
                 </div>
-
             </div>
             <div class="col-12">
                 <div class="mb-3 text-right">
@@ -745,10 +715,26 @@
 @endsection
 
 @section('script')
+<!-- Treeview js -->
+<script src="{{ static_asset('assets/js/hummingbird-treeview.js') }}"></script>
 
 <script type="text/javascript">
     $(document).ready(function (){
         show_hide_shipping_div();
+
+        $("#treeview").hummingbird();
+        var main_id = '{{ $product->category_id != null ? $product->category_id : 0 }}';
+        var selected_ids = '{{ implode(",",$old_categories) }}';
+        if (selected_ids != '') {
+            const myArray = selected_ids.split(",");
+            for (let i = 0; i < myArray.length; i++) {
+                const element = myArray[i];
+                $('#treeview input:checkbox#'+element).prop('checked',true);
+                $('#treeview input:checkbox#'+element).parents( "ul" ).css( "display", "block" );
+                $('#treeview input:checkbox#'+element).parents( "li" ).children('.las').removeClass( "la-plus" ).addClass('la-minus');
+            }
+        }
+        $('#treeview input:radio[value='+main_id+']').prop('checked',true);
     });
 
     $("[name=shipping_type]").on("change", function (){
@@ -836,7 +822,7 @@
                         AIZ.uploader.previewGenerate();
                 }, "2000");
                 AIZ.plugins.fooTable();
-                if (data.length > 1) {
+                if (data.trim().length > 1) {
                     $('#show-hide-div').hide();
                 }
                 else {

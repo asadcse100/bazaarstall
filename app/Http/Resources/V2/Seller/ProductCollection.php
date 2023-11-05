@@ -28,11 +28,11 @@ class ProductCollection extends ResourceCollection
                     'price' => format_price($data->unit_price),
                     'current_stock' => $qty,
                     'status' => $data->published == 0 ? false : true,
-                    'category' => $data->category->name,
+                    'category' => $data->main_category ? $data->main_category->name : "",
                     'featured' => $data->seller_featured == 0 ? false : true,
                 ];
             }),
-            
+
         ];
     }
 }

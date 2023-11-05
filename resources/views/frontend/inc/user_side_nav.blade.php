@@ -7,13 +7,20 @@
                 <i class="las la-times la-2x"></i>
             </button>
         </div>
-
+        @php
+            $user = auth()->user();
+            $user_avatar = null;
+            $carts = [];
+            if ($user && $user->avatar_original != null) {
+                $user_avatar = uploaded_asset($user->avatar_original);
+            }
+        @endphp
         <!-- Customer info -->
         <div class="p-4 text-center mb-4 border-bottom position-relative">
             <!-- Image -->
             <span class="avatar avatar-md mb-3">
-                @if (Auth::user()->avatar_original != null)
-                    <img src="{{ uploaded_asset(Auth::user()->avatar_original) }}"
+                @if ($user->avatar_original != null)
+                    <img src="{{ $user_avatar }}"
                         onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
                 @else
                     <img src="{{ static_asset('assets/img/avatar-place.png') }}" class="image rounded-circle"
@@ -21,13 +28,13 @@
                 @endif
             </span>
             <!-- Name -->
-            <h4 class="h5 fs-14 mb-1 fw-700 text-dark">{{ Auth::user()->name }}</h4>
+            <h4 class="h5 fs-14 mb-1 fw-700 text-dark">{{ $user->name }}</h4>
             <!-- Phone -->
-            @if (Auth::user()->phone != null)
-                <div class="text-truncate opacity-60 fs-12">{{ Auth::user()->phone }}</div>
+            @if ($user->phone != null)
+                <div class="text-truncate opacity-60 fs-12">{{ $user->phone }}</div>
             <!-- Email -->
             @else
-                <div class="text-truncate opacity-60 fs-12">{{ Auth::user()->email }}</div>
+                <div class="text-truncate opacity-60 fs-12">{{ $user->email }}</div>
             @endif
         </div>
 

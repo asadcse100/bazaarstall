@@ -18,6 +18,7 @@ use App\Models\ProductTax;
 use Illuminate\Http\Request;
 use App\Models\SellerPackage;
 use App\Models\BusinessSetting;
+use App\Models\ProductCategory;
 use App\Models\SellerWithdrawRequest;
 
 class UpdateController extends Controller
@@ -48,7 +49,7 @@ class UpdateController extends Controller
                     flash(translate('Could not open the updates zip file.'))->error();
                     return back();
                 }
-                if ($_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1'){
+                if ($_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1') {
                     return redirect()->route('update.step2');
                 }
                 return redirect()->route('update.step1');
@@ -60,13 +61,19 @@ class UpdateController extends Controller
         }
     }
 
-    public function step1() {
+    public function step1()
+    {
         return view('update.step1');
     }
 
-    public function purchase_code(Request $request) {
+    public function purchase_code(Request $request)
+    {
         if (\App\Utility\CategoryUtility::create_initial_category($request->purchase_code) == false) {
             flash("Sorry! The purchase code you have provided is not valid.")->error();
+            return back();
+        }
+        if ($request->syatem_key == null) {
+            flash("Sorry! The Syatem Key required")->error();
             return back();
         }
 
@@ -80,28 +87,73 @@ class UpdateController extends Controller
             $business_settings->value = $request->purchase_code;
             $business_settings->save();
         }
-        
+
+        $this->writeEnvironmentFile('SYSTEM_KEY', $request->syatem_key);
+
         return redirect()->route('update.step2');
     }
 
     public function step2()
     {
-        if (get_setting('current_version') == '7.8.0') {
-            $sql_path = base_path('sqlupdates/v790.sql');
+        if (get_setting('current_version') == '7.9.2') {
+            $sql_path = base_path('sqlupdates/v793.sql');
             DB::unprepared(file_get_contents($sql_path));
 
             return redirect()->route('update.step3');
-        }
-        if (get_setting('current_version') == '7.7.0') {
+        } else if (get_setting('current_version') == '7.9.1') {
+            $sql_path = base_path('sqlupdates/v792.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v793.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            return redirect()->route('update.step3');
+        } else if (get_setting('current_version') == '7.9.0') {
+            $sql_path = base_path('sqlupdates/v790.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v791.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v792.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v793.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            return redirect()->route('update.step3');
+        } else if (get_setting('current_version') == '7.8.0') {
+            $sql_path = base_path('sqlupdates/v790.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v791.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v792.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v793.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            return redirect()->route('update.step3');
+        } else if (get_setting('current_version') == '7.7.0') {
             $sql_path = base_path('sqlupdates/v780.sql');
             DB::unprepared(file_get_contents($sql_path));
 
             $sql_path = base_path('sqlupdates/v790.sql');
             DB::unprepared(file_get_contents($sql_path));
 
+            $sql_path = base_path('sqlupdates/v791.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v792.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v793.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
             return redirect()->route('update.step3');
-        }
-        elseif (get_setting('current_version') == '7.6.0') {
+        } elseif (get_setting('current_version') == '7.6.0') {
             $sql_path = base_path('sqlupdates/v770.sql');
             DB::unprepared(file_get_contents($sql_path));
 
@@ -111,9 +163,17 @@ class UpdateController extends Controller
             $sql_path = base_path('sqlupdates/v790.sql');
             DB::unprepared(file_get_contents($sql_path));
 
+            $sql_path = base_path('sqlupdates/v791.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v792.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v793.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
             return redirect()->route('update.step3');
-        }
-        elseif (get_setting('current_version') == '7.5.0') {
+        } elseif (get_setting('current_version') == '7.5.0') {
             $sql_path = base_path('sqlupdates/v760.sql');
             DB::unprepared(file_get_contents($sql_path));
 
@@ -126,9 +186,17 @@ class UpdateController extends Controller
             $sql_path = base_path('sqlupdates/v790.sql');
             DB::unprepared(file_get_contents($sql_path));
 
+            $sql_path = base_path('sqlupdates/v791.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v792.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v793.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
             return redirect()->route('update.step3');
-        }
-        elseif (get_setting('current_version') == '7.4.0') {
+        } elseif (get_setting('current_version') == '7.4.0') {
             $sql_path = base_path('sqlupdates/v750.sql');
             DB::unprepared(file_get_contents($sql_path));
 
@@ -144,9 +212,17 @@ class UpdateController extends Controller
             $sql_path = base_path('sqlupdates/v790.sql');
             DB::unprepared(file_get_contents($sql_path));
 
+            $sql_path = base_path('sqlupdates/v791.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v792.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v793.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
             return redirect()->route('update.step3');
-        }
-        elseif (get_setting('current_version') == '7.3.0') {
+        } elseif (get_setting('current_version') == '7.3.0') {
             $sql_path = base_path('sqlupdates/v740.sql');
             DB::unprepared(file_get_contents($sql_path));
 
@@ -165,9 +241,17 @@ class UpdateController extends Controller
             $sql_path = base_path('sqlupdates/v790.sql');
             DB::unprepared(file_get_contents($sql_path));
 
+            $sql_path = base_path('sqlupdates/v791.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v792.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v793.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
             return redirect()->route('update.step3');
-        }
-        elseif (get_setting('current_version') == '7.2.0') {
+        } elseif (get_setting('current_version') == '7.2.0') {
             $sql_path = base_path('sqlupdates/v730.sql');
             DB::unprepared(file_get_contents($sql_path));
 
@@ -189,9 +273,17 @@ class UpdateController extends Controller
             $sql_path = base_path('sqlupdates/v790.sql');
             DB::unprepared(file_get_contents($sql_path));
 
+            $sql_path = base_path('sqlupdates/v791.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v792.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v793.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
             return redirect()->route('update.step3');
-        }
-        elseif (get_setting('current_version') == '7.1.0') {
+        } elseif (get_setting('current_version') == '7.1.0') {
             $sql_path = base_path('sqlupdates/v720.sql');
             DB::unprepared(file_get_contents($sql_path));
 
@@ -216,9 +308,17 @@ class UpdateController extends Controller
             $sql_path = base_path('sqlupdates/v790.sql');
             DB::unprepared(file_get_contents($sql_path));
 
+            $sql_path = base_path('sqlupdates/v791.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v792.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v793.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
             return redirect()->route('update.step3');
-        }
-        elseif (get_setting('current_version') == '7.0.0') {
+        } elseif (get_setting('current_version') == '7.0.0') {
             $sql_path = base_path('sqlupdates/v710.sql');
             DB::unprepared(file_get_contents($sql_path));
 
@@ -246,9 +346,17 @@ class UpdateController extends Controller
             $sql_path = base_path('sqlupdates/v790.sql');
             DB::unprepared(file_get_contents($sql_path));
 
+            $sql_path = base_path('sqlupdates/v791.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v792.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v793.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
             return redirect()->route('update.step3');
-        }
-        elseif (get_setting('current_version') == '6.5.0') {
+        } elseif (get_setting('current_version') == '6.5.0') {
             $sql_path = base_path('sqlupdates/v700.sql');
             DB::unprepared(file_get_contents($sql_path));
 
@@ -279,10 +387,17 @@ class UpdateController extends Controller
             $sql_path = base_path('sqlupdates/v790.sql');
             DB::unprepared(file_get_contents($sql_path));
 
+            $sql_path = base_path('sqlupdates/v791.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v792.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
+            $sql_path = base_path('sqlupdates/v793.sql');
+            DB::unprepared(file_get_contents($sql_path));
+
             return redirect()->route('update.step3');
-        }
-        
-        else {
+        } else {
             Artisan::call('view:clear');
             Artisan::call('cache:clear');
             $previousRouteServiceProvier = base_path('app/Providers/RouteServiceProvider.php');
@@ -298,6 +413,7 @@ class UpdateController extends Controller
         Artisan::call('view:clear');
         Artisan::call('cache:clear');
 
+        $this->setCategoryToProductCategory();
         // $this->setAdmnRole();
         // $this->convertSellerIntoShop();
         // $this->convertSellerIntoUser();
@@ -312,11 +428,32 @@ class UpdateController extends Controller
         return view('update.done');
     }
 
+    public function setCategoryToProductCategory()
+    {
+        $product_categories = ProductCategory::all();
+        if ($product_categories->isEmpty()) {
+            $products = Product::all();
+            $new_product_array = [];
+            foreach ($products as $product) {
+                $new_product_array[] = [
+                    "product_id" => $product->id,
+                    "category_id" => $product->category_id
+                ];
+            }
+            $collection = collect($new_product_array);
+            $chunks = $collection->chunk(500);
+
+            foreach ($chunks as $chunk) {
+                ProductCategory::insert($chunk->toArray());
+            }
+        }
+    }
+
     public function setAdmnRole()
     {
         $admin_user = User::where('user_type', 'admin')->first();
         $roles = $admin_user->getRoleNames();
-        if($roles->empty()) {
+        if ($roles->empty()) {
             $admin_user->assignRole(['Super Admin']);
         }
     }
@@ -343,16 +480,16 @@ class UpdateController extends Controller
                 if ($shop->admin_to_pay == 0) {
                     $shop->admin_to_pay = $seller->admin_to_pay;
                 }
-                if(!$shop->verification_status) {
+                if (!$shop->verification_status) {
                     $shop->verification_status = $seller->verification_status;
                 }
-                if(!$shop->verification_info) {
+                if (!$shop->verification_info) {
                     $shop->verification_info = $seller->verification_info;
                 }
-                if(!$shop->cash_on_delivery_status) {
+                if (!$shop->cash_on_delivery_status) {
                     $shop->cash_on_delivery_status = $seller->cash_on_delivery_status;
                 }
-                
+
                 if (!$shop->bank_name) {
                     $shop->bank_name = $seller->bank_name;
                     $shop->bank_acc_name = $seller->bank_acc_name;
@@ -445,6 +582,21 @@ class UpdateController extends Controller
                 $seller->num_of_sale = $num_of_sale;
                 $seller->save();
             } catch (\Exception $e) {
+            }
+        }
+    }
+
+    public function writeEnvironmentFile($type, $val) {
+        $path = base_path('.env');
+        if (file_exists($path)) {
+            $val = '"'.trim($val).'"';
+            if(is_numeric(strpos(file_get_contents($path), $type)) && strpos(file_get_contents($path), $type) >= 0){
+                file_put_contents($path, str_replace(
+                    $type.'="'.env($type).'"', $type.'='.$val, file_get_contents($path)
+                ));
+            }
+            else{
+                file_put_contents($path, file_get_contents($path)."\r\n".$type.'='.$val);
             }
         }
     }

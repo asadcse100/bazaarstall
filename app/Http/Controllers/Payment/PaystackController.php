@@ -105,7 +105,7 @@ class PaystackController extends Controller
             } elseif ($payment_type == 'wallet_payment') {
                 $payment_detalis = json_encode($payment);
                 if (!empty($payment['data']) && $payment['data']['status'] == 'success') {
-                    $payment_data['amount'] = $payment['data']['amount']/100;
+                    $payment_data['amount'] = $payment['data']['amount'] / 100;
                     $payment_data['payment_method'] = $payment['data']['metadata']['custom_fields']['payment_method'];
                     Auth::login(User::where('email', $payment['data']['customer']['email'])->first());
                     return (new WalletController)->wallet_payment_done($payment_data, $payment_detalis);
@@ -143,7 +143,6 @@ class PaystackController extends Controller
             } else {
                 return response()->json(['result' => false, 'message' => "Payment unsuccessful", 'payment_details' => $payment]);
             }
-
         }
     }
 }

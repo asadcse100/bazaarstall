@@ -4,57 +4,33 @@
     <div class="aiz-titlebar text-left mt-2 mb-3">
         <h5 class="mb-0 h5">{{ translate('Edit Digital Product') }}</h5>
     </div>
-    <div class="row">
-        <div class="col-lg-10 mx-auto">
-            <form class="form form-horizontal mar-top" action="{{ route('digitalproducts.update', $product->id) }}"
-                method="POST" enctype="multipart/form-data" id="choice_form">
+    <form class="form form-horizontal mar-top" action="{{ route('digitalproducts.update', $product->id) }}"
+        method="POST" enctype="multipart/form-data" id="choice_form">
+
+        <div class="row">
+            <div class="col-lg-8">
                 <input name="_method" type="hidden" value="PATCH">
                 <input type="hidden" name="lang" value="{{ $lang }}">
                 @csrf
+
                 <div class="card">
-                    <div class="card-body p-0">
-                        <ul class="nav nav-tabs nav-fill border-light">
-                            @foreach (get_all_active_language() as $key => $language)
-                                <li class="nav-item">
-                                    <a class="nav-link text-reset @if ($language->code == $lang) active @else bg-soft-dark border-light border-left-0 @endif py-3"
-                                        href="{{ route('digitalproducts.edit', ['id' => $product->id, 'lang' => $language->code]) }}">
-                                        <img src="{{ static_asset('assets/img/flags/' . $language->code . '.png') }}"
-                                            height="11" class="mr-1">
-                                        <span>{{ $language->name }}</span>
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0 h6">{{ translate('General') }}</h5>
-                    </div>
+                    <ul class="nav nav-tabs nav-fill border-light">
+                        @foreach (get_all_active_language() as $key => $language)
+                        <li class="nav-item">
+                            <a class="nav-link text-reset @if ($language->code == $lang) active @else bg-soft-dark border-light border-left-0 @endif py-3" href="{{ route('digitalproducts.edit', ['id' => $product->id, 'lang' => $language->code]) }}">
+                                <img src="{{ static_asset('assets/img/flags/'.$language->code.'.png') }}" height="11" class="mr-1">
+                                <span>{{$language->name}}</span>
+                            </a>
+                        </li>
+                        @endforeach
+                    </ul>
                     <div class="card-body">
                         <div class="form-group row">
-                            <label class="col-lg-2 col-from-label">{{ translate('Product Name') }}</label>
+                            <label class="col-lg-2 col-from-label">{{ translate('Product Name') }}  <i class="las la-language text-danger" title="{{translate('Translatable')}}"></i></label>
                             <div class="col-lg-8">
                                 <input type="text" class="form-control" name="name"
                                     placeholder="{{ translate('Product Name') }}"
                                     value="{{ $product->getTranslation('name', $lang) }}" required>
-                            </div>
-                        </div>
-                        <div class="form-group row" id="category">
-                            <label class="col-lg-2 col-from-label">{{ translate('Category') }}</label>
-                            <div class="col-lg-8">
-                                <select class="form-control aiz-selectpicker" name="category_id" id="category_id"
-                                    data-selected="{{ $product->category_id }}" required>
-                                    @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->getTranslation('name') }}
-                                        </option>
-                                        @foreach ($category->childrenCategories as $childCategory)
-                                            @include('categories.child_category', [
-                                                'child_category' => $childCategory,
-                                            ])
-                                        @endforeach
-                                    @endforeach
-                                </select>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -181,15 +157,6 @@
                                     class="form-control" value="{{ $product->unit_price }}" required>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label class="col-lg-2 col-from-label">{{ translate('Purchase price') }}</label>
-                            <div class="col-lg-8">
-                                <input type="number" lang="en" min="0" step="0.01"
-                                    placeholder="{{ translate('Purchase price') }}" name="purchase_price"
-                                    class="form-control" value="{{ $product->purchase_price }}" required>
-                            </div>
-                        </div>
-
                         @foreach (\App\Models\Tax::where('tax_status', 1)->get() as $tax)
                             @php
                                 $tax_amount = 0;
@@ -266,18 +233,71 @@
                     </div>
                     <div class="card-body">
                         <div class="form-group row">
-                            <label class="col-lg-2 col-from-label">{{ translate('Description') }}</label>
+                            <label class="col-lg-2 col-from-label">{{ translate('Description') }} <i class="las la-language text-danger" title="{{translate('Translatable')}}"></i></label>
                             <div class="col-lg-9">
                                 <textarea class="aiz-text-editor" name="description">{{ $product->getTranslation('description', $lang) }}</textarea>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="mb-3 text-right">
-                    <button type="submit" name="button"
-                        class="btn btn-primary">{{ translate('Update Product') }}</button>
+            </div>
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0 h6">{{ translate('Product Category') }}</h5>
+                        <h6 class="float-right fs-13 mb-0">
+                            {{ translate('Select Main') }}
+                            <span class="position-relative main-category-info-icon">
+                                <i class="las la-question-circle fs-18 text-info"></i>
+                                <span class="main-category-info bg-soft-info p-2 position-absolute d-none border">{{ translate('This will be used for commission based calculations and homepage category wise product Show.') }}</span>
+                            </span>
+                        </h6>
+                    </div>
+                    <div class="card-body ">
+                        <div class="h-170px overflow-auto c-scrollbar-light">
+                            @php
+                                $old_categories = $product->categories()->pluck('category_id')->toArray();
+                            @endphp
+                            <ul class="hummingbird-treeview-converter list-unstyled" data-checkbox-name="category_ids[]" data-radio-name="category_id">
+                                @foreach ($categories as $category)
+                                <li id="{{ $category->id }}">{{ $category->name }}</li>
+                                    @foreach ($category->childrenCategories as $childCategory)
+                                        @include('backend.product.products.child_category', ['child_category' => $childCategory])
+                                    @endforeach
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
                 </div>
+            </div>
+            <div class="col-12">
+                <div class="float-right mb-3">
+                    <button type="submit" name="button" class="btn btn-primary">{{ translate('Update Product') }}</button>
+                </div>
+            </div>
         </div>
-        </form>
-    </div>
+    </form>
+@endsection
+
+@section('script')
+<!-- Treeview js -->
+<script src="{{ static_asset('assets/js/hummingbird-treeview.js') }}"></script>
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        $("#treeview").hummingbird();
+        var main_id = '{{ $product->category_id != null ? $product->category_id : 0 }}';
+        var selected_ids = '{{ implode(",",$old_categories) }}';
+        if (selected_ids != '') {
+            const myArray = selected_ids.split(",");
+            for (let i = 0; i < myArray.length; i++) {
+                const element = myArray[i];
+                $('#treeview input:checkbox#'+element).prop('checked',true);
+                $('#treeview input:checkbox#'+element).parents( "ul" ).css( "display", "block" );
+                $('#treeview input:checkbox#'+element).parents( "li" ).children('.las').removeClass( "la-plus" ).addClass('la-minus');
+            }
+        }
+        $('#treeview input:radio[value='+main_id+']').prop('checked',true);
+    });
+</script>
 @endsection

@@ -65,10 +65,20 @@ Route::group(['prefix' => 'v2/seller', 'middleware' => ['app_language']], functi
             Route::get('products/remaining-uploads', 'remainingUploads');
 
             Route::get('products/reviews', 'product_reviews');
+            Route::get('products/queries', 'product_queries');
+            Route::get('products/query-show/{id}', 'product_queries_show');
+            Route::post('products/query-reply/{id}', 'product_queries_reply');
 
             Route::get('products/search', 'search');
         });
 
+
+        //Product Query Section
+        Route::controller(ProductQueryController::class)->group(function () {
+            Route::get('products/queries', 'product_queries');
+            Route::get('products/query-show/{id}', 'product_queries_show');
+            Route::post('products/query-reply/{id}', 'product_queries_reply');
+        });
         // Digital Product Section
         Route::controller(DigitalProductController::class)->group(function () {
             Route::get('digital-products', 'index'); 
@@ -78,6 +88,7 @@ Route::group(['prefix' => 'v2/seller', 'middleware' => ['app_language']], functi
             Route::post('digital-products/update/{product}', 'update');
             Route::get('digital-products/destroy/{id}', 'destroy');
             Route::get('digital-products/download/{id}', 'download');
+
         });
 
         //Whole Sale Product Section
@@ -136,5 +147,5 @@ Route::group(['prefix' => 'v2/seller', 'middleware' => ['app_language']], functi
         // ...
     });
 
-    Route::post('shops/create', [ShopController::class, 'store']);
+    // Route::post('shops/create', [ShopController::class, 'store']);
 });

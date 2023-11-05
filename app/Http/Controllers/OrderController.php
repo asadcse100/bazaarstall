@@ -59,6 +59,9 @@ class OrderController extends Controller
             Route::currentRouteName() == 'pick_up_point.index' &&
             Auth::user()->can('view_pickup_point_orders')
         ) {
+            if (get_setting('vendor_system_activation') != 1) {
+                $orders = $orders->where('orders.seller_id', '=', $admin_user_id);
+            }
             $orders->where('shipping_type', 'pickup_point')->orderBy('code', 'desc');
             if (
                 Auth::user()->user_type == 'staff' &&
@@ -71,6 +74,9 @@ class OrderController extends Controller
             Route::currentRouteName() == 'all_orders.index' &&
             Auth::user()->can('view_all_orders')
         ) {
+            if (get_setting('vendor_system_activation') != 1) {
+                $orders = $orders->where('orders.seller_id', '=', $admin_user_id);
+            }
         } else {
             abort(403);
         }

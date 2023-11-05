@@ -45,6 +45,7 @@ class CategoryController extends Controller
     public function create()
     {
         $categories = Category::where('parent_id', 0)
+            ->where('digital', 0)
             ->with('childrenCategories')
             ->get();
 
@@ -123,6 +124,7 @@ class CategoryController extends Controller
         $lang = $request->lang;
         $category = Category::findOrFail($id);
         $categories = Category::where('parent_id', 0)
+            ->where('digital', $category->digital)
             ->with('childrenCategories')
             ->whereNotIn('id', CategoryUtility::children_ids($category->id, true))->where('id', '!=' , $category->id)
             ->orderBy('name','asc')
@@ -234,5 +236,15 @@ class CategoryController extends Controller
         $category->save();
         Cache::forget('featured_categories');
         return 1;
+    }
+
+    public function categoriesByType(Request $request)
+    {
+        $categories = Category::where('parent_id', 0)
+            ->where('digital', $request->digital)
+            ->with('childrenCategories')
+            ->get();
+
+        return view('backend.product.categories.categories_option', compact('categories'));
     }
 }

@@ -312,10 +312,6 @@ class ProductService
         $product->taxes()->delete();
         $product->wishlists()->delete();
         $product->carts()->delete();
-
-        if(Product::destroy($id)){
-            return true;
-        }
-        return false;
+        Product::destroy($id);
     }
 }

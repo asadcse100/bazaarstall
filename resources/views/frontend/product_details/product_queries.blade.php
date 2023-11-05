@@ -2,7 +2,7 @@
     <div class="bg-white border mt-4 mb-4" id="product_query">
         <div class="p-3 p-sm-4">
             <h3 class="fs-16 fw-700 mb-0">
-                <span>{{ translate(' Product Queries ') }} ({{ $total_query }})</span>
+                <span>{{ translate(' Product Queries ') }} ({{ count($detailedProduct->product_queries) }})</span>
             </h3>
         </div>
 
@@ -40,7 +40,7 @@
 
             <!-- Own Queries -->
             @php
-                $own_product_queries = Auth::user()->product_queries->where('product_id',$detailedProduct->id);
+                $own_product_queries = $detailedProduct->product_queries->where('customer_id', Auth::id());
             @endphp
             @if ($own_product_queries->count() > 0)
             

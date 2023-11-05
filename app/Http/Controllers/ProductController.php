@@ -119,12 +119,10 @@ class ProductController extends Controller
         $products = $products->orderBy('created_at', 'desc')->paginate(15);
         $type = 'Seller';
 
-        if($product_type == 'digital'){
+        if ($product_type == 'digital') {
             return view('backend.product.digital_products.index', compact('products', 'sort_search', 'type'));
         }
         return view('backend.product.products.index', compact('products', 'type', 'col_name', 'query', 'seller_id', 'sort_search'));
-
-
     }
 
     public function all_products(Request $request)
@@ -134,6 +132,9 @@ class ProductController extends Controller
         $seller_id = null;
         $sort_search = null;
         $products = Product::where('auction_product', 0)->where('wholesale_product', 0);
+        if (get_setting('vendor_system_activation') != 1) {
+            $products = $products->where('added_by', 'admin');
+        }
         if ($request->has('user_id') && $request->user_id != null) {
             $products = $products->where('user_id', $request->user_id);
             $seller_id = $request->user_id;
@@ -201,6 +202,9 @@ class ProductController extends Controller
             '_token', 'sku', 'choice', 'tax_id', 'tax', 'tax_type', 'flash_deal_id', 'flash_discount', 'flash_discount_type'
         ]));
         $request->merge(['product_id' => $product->id]);
+
+        //Product categories
+        $product->categories()->attach($request->category_ids);
 
         //VAT & Tax
         if ($request->tax_id) {
@@ -303,12 +307,13 @@ class ProductController extends Controller
             '_token', 'sku', 'choice', 'tax_id', 'tax', 'tax_type', 'flash_deal_id', 'flash_discount', 'flash_discount_type'
         ]), $product);
 
-        //Product Stock
-        foreach ($product->stocks as $key => $stock) {
-            $stock->delete();
-        }
-
         $request->merge(['product_id' => $product->id]);
+
+        //Product categories
+        $product->categories()->sync($request->category_ids);
+
+        //Product Stock
+        $product->stocks()->delete();
         $this->productStockService->store($request->only([
             'colors_active', 'colors', 'choice_no', 'unit_price', 'sku', 'current_stock', 'product_id'
         ]), $product);
@@ -320,7 +325,7 @@ class ProductController extends Controller
 
         //VAT & Tax
         if ($request->tax_id) {
-            ProductTax::where('product_id', $product->id)->delete();
+            $product->taxes()->delete();
             $this->productTaxService->store($request->only([
                 'tax_id', 'tax', 'tax_type', 'product_id'
             ]));
@@ -355,6 +360,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         $product->product_translations()->delete();
+        $product->categories()->detach();
         $product->stocks()->delete();
         $product->taxes()->delete();
 
@@ -394,7 +400,7 @@ class ProductController extends Controller
     public function duplicate(Request $request, $id)
     {
         $product = Product::find($id);
-        
+
         //Product
         $product_new = $this->productService->product_duplicate_store($product);
 

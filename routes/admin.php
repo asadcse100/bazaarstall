@@ -75,6 +75,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::get('/categories/edit/{id}', 'edit')->name('categories.edit');
         Route::get('/categories/destroy/{id}', 'destroy')->name('categories.destroy');
         Route::post('/categories/featured', 'updateFeatured')->name('categories.featured');
+        Route::post('/categories/categoriesByType', 'categoriesByType')->name('categories.categories-by-type');
     });
     
     // Brand

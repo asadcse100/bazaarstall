@@ -18,16 +18,26 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label class="col-md-3 col-form-label">{{translate('Type')}}</label>
+                        <div class="col-md-9">
+                            <select name="digital" onchange="categoriesByType(this.value)" required class="form-control aiz-selectpicker mb-2 mb-md-0">
+                                <option value="0">{{translate('Physical')}}</option>
+                                <option value="1">{{translate('Digital')}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label class="col-md-3 col-form-label">{{translate('Parent Category')}}</label>
                         <div class="col-md-9">
                             <select class="select2 form-control aiz-selectpicker" name="parent_id" data-toggle="select2" data-placeholder="Choose ..." data-live-search="true">
-                                <option value="0">{{ translate('No Parent') }}</option>
+                                @include('backend.product.categories.categories_option', ['categories' => $categories])
+                                {{-- <option value="0">{{ translate('No Parent') }}</option>
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->getTranslation('name') }}</option>
                                     @foreach ($category->childrenCategories as $childCategory)
                                         @include('categories.child_category', ['child_category' => $childCategory])
                                     @endforeach
-                                @endforeach
+                                @endforeach --}}
                             </select>
                         </div>
                     </div>
@@ -38,15 +48,6 @@
                         <div class="col-md-9">
                             <input type="number" name="order_level" class="form-control" id="order_level" placeholder="{{translate('Order Level')}}">
                             <small>{{translate('Higher number has high priority')}}</small>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-md-3 col-form-label">{{translate('Type')}}</label>
-                        <div class="col-md-9">
-                            <select name="digital" required class="form-control aiz-selectpicker mb-2 mb-md-0">
-                                <option value="0">{{translate('Physical')}}</option>
-                                <option value="1">{{translate('Digital')}}</option>
-                            </select>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -133,5 +134,30 @@
         </div>
     </div>
 </div>
+
+@endsection
+
+@section('script')
+
+<script type="text/javascript">
+    function categoriesByType(val){
+        $('select[name="parent_id"]').html('');
+        AIZ.plugins.bootstrapSelect('refresh');
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type:"POST",
+            url:'{{ route('categories.categories-by-type') }}',
+            data:{
+               digital: val
+            },
+            success: function(data) {
+                $('select[name="parent_id"]').html(data);
+                AIZ.plugins.bootstrapSelect('refresh');
+            }
+        });
+    }
+</script>
 
 @endsection

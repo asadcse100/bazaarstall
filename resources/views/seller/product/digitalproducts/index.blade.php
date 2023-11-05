@@ -84,8 +84,8 @@
                             <td>{{ $key+1 }}</td>
                             <td><a href="{{ route('product', $product->slug) }}" target="_blank">{{   $product->getTranslation('name')  }}</a></td>
                             <td>
-                                @if ($product->category != null)
-                                    {{ $product->category->getTranslation('name') }}
+                                @if ($product->main_category != null)
+                                    {{ $product->main_category->getTranslation('name') }}
                                 @endif
                             </td>
                             <td>{{ $product->unit_price }}</td>

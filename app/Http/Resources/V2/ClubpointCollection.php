@@ -15,10 +15,10 @@ class ClubpointCollection extends ResourceCollection
                 $points = floatval($points);
 
                 return [
-                    'id'        => (int) $data->id,                    
+                    'id'        => (int) $data->id,
                     'user_id'    => (int) $data->user_id,
-                    'order_code' =>$data->order->code,
-                    'convertible_club_point' =>$data->club_point_details->where('refunded',0)->sum('point'),
+                    'order_code' => $data->order == null ? translate("Order not found") : $data->order->code,
+                    'convertible_club_point' => $data->club_point_details->where('refunded', 0)->sum('point'),
                     'points'    => floatval($points),
                     'convert_status' => (int) $data->convert_status,
                     'date'      => date('d-m-Y', strtotime($data->created_at)),

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api\V2;
 
+use App\Http\Resources\V2\CouponCollection;
+use App\Http\Resources\V2\ProductMiniCollection;
 use App\Models\Cart;
 use App\Models\Coupon;
 use App\Models\CouponUsage;
@@ -34,13 +36,13 @@ class CouponController extends Controller
                     } else {
                         return response()->json([
                             'success' => true,
-                            'discount' => (double) $couponDiscount
+                            'discount' => (float) $couponDiscount
                         ]);
                     }
                 }
             } elseif ($coupon->type == 'product_base') {
                 $couponDiscount = 0;
-                $cartItems = Cart::where('user_id',auth()->user()->id)->get();
+                $cartItems = Cart::where('user_id', auth()->user()->id)->get();
                 foreach ($cartItems as $key => $cartItem) {
                     foreach ($couponDetails as $key => $couponDetail) {
                         if ($couponDetail->product_id == $cartItem->product_id) {
@@ -60,7 +62,7 @@ class CouponController extends Controller
                 } else {
                     return response()->json([
                         'success' => true,
-                        'discount' => (double) $couponDiscount,
+                        'discount' => (float) $couponDiscount,
                         'message' => translate('Coupon code applied successfully')
                     ]);
                 }
@@ -73,7 +75,32 @@ class CouponController extends Controller
         }
     }
 
-    protected function isCouponAlreadyApplied($userId, $couponId) {
+    protected function isCouponAlreadyApplied($userId, $couponId)
+    {
         return CouponUsage::where(['user_id' => $userId, 'coupon_id' => $couponId])->count() > 0;
     }
+
+
+    public function couponList()
+    {
+        $coupons = Coupon::where('start_date', '<=', strtotime(date('d-m-Y')))->where('end_date', '>=', strtotime(date('d-m-Y')))->paginate(10);
+        return new CouponCollection($coupons);
+    }
+
+    public function getCouponProducts($id)
+    {
+        $coupon = Coupon::where('id', $id)->first();
+        if($coupon->type == 'product_base'){
+            $products = json_decode($coupon->details); 
+            $coupon_products = [];
+            foreach($products as $product) {                            
+                array_push($coupon_products, $product->product_id);                           
+            }
+            $products = get_multiple_products($coupon_products);
+            return new ProductMiniCollection($products);
+
+        }
+        return $this->failed(translate('Something went wrong'));
+    }
+
 }

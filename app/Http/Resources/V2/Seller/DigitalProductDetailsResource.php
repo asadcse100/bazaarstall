@@ -21,13 +21,14 @@ class DigitalProductDetailsResource extends JsonResource
             'lang'                  => $this->lang,
             'product_name'          => $this->getTranslation('name', $this->lang),
             "category_id"           => $this->category_id,
-            "product_file"          => new UploadedFileCollection(Upload::whereIn("id",explode(",",$this->file_name))->get()),
+            "category_ids"           => $this->categories()->pluck('category_id')->toArray(),
+            "product_file"          => new UploadedFileCollection(Upload::whereIn("id", explode(",", $this->file_name))->get()),
             "tags"                  => $this->tags,
-            "photos"                => new UploadedFileCollection(Upload::whereIn("id",explode(",",$this->photos))->get()),
-            "thumbnail_img"         => new UploadedFileCollection(Upload::whereIn("id",explode(",",$this->thumbnail_img))->get()),
+            "photos"                => new UploadedFileCollection(Upload::whereIn("id", explode(",", $this->photos))->get()),
+            "thumbnail_img"         => new UploadedFileCollection(Upload::whereIn("id", explode(",", $this->thumbnail_img))->get()),
             "meta_title"            => $this->meta_title,
             "meta_description"      => $this->meta_description,
-            "meta_img"              => new UploadedFileCollection(Upload::where("id",$this->meta_img)->get()), 
+            "meta_img"              => new UploadedFileCollection(Upload::where("id", $this->meta_img)->get()),
             "slug"                  => $this->slug,
             "unit_price"            => $this->unit_price,
             "purchase_price"        => $this->purchase_price,
@@ -47,5 +48,4 @@ class DigitalProductDetailsResource extends JsonResource
             'status' => 200
         ];
     }
-
 }

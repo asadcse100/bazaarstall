@@ -1,11 +1,6 @@
 @php
-    $carts = array();
-    if (auth()->user() != null) {
-        $user_id = Auth::user()->id;
-        $carts = get_user_cart();
-    }
-
     $total = 0;
+    $carts = get_user_cart();
     if(count($carts) > 0) {
         foreach ($carts as $key => $cartItem) {
             $product = get_single_product($cartItem['product_id']);
@@ -30,7 +25,9 @@
     </span>
     <span class="d-none d-xl-block ml-2 fs-14 fw-700 text-white">{{ single_price($total) }}</span>
     <span class="nav-box-text d-none d-xl-block ml-2 text-white fs-12">
-        (<span class="cart-count">{{(isset($carts) && count($carts) > 0) ? count($carts) : 0 }}</span> {{translate('Items')}})
+
+        (<span class="cart-count">{{count($carts) > 0 ? count($carts) : 0 }}</span> {{translate('Items')}})
+
     </span>
 </a>
 

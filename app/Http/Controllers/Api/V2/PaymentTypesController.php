@@ -3,8 +3,8 @@
 
 namespace App\Http\Controllers\Api\V2;
 
-use Illuminate\Http\Request;
 use App\Models\ManualPaymentMethod;
+use Illuminate\Http\Request;
 
 class PaymentTypesController
 {
@@ -168,6 +168,21 @@ class PaymentTypesController
                 $payment_types[] = $payment_type;
             }
 
+            if (get_setting('aamarpay') == 1) {
+                $payment_type = array();
+                $payment_type['payment_type'] = 'aamarpay';
+                $payment_type['payment_type_key'] = 'aamarpay';
+                $payment_type['image'] = static_asset('assets/img/cards/aamarpay.png');
+                $payment_type['name'] = "aamarpay";
+                $payment_type['title'] = translate("Checkout with aamarpay");
+                $payment_type['offline_payment_id'] = 0;
+                $payment_type['details'] = "";
+                if ($mode == 'wallet') {
+                    $payment_type['title'] = translate("Recharge with aamarpay");
+                }
+
+                $payment_types[] = $payment_type;
+            }
 
             //African Payment Gateways
             if (addon_is_activated('african_pg') && get_setting('flutterwave') == 1) {
@@ -188,7 +203,7 @@ class PaymentTypesController
 
             if (addon_is_activated('paytm')) {
 
-                if (get_setting('paytm') == 1) {
+                if (get_setting('paytm_payment') == 1) {
                     $payment_type = array();
                     $payment_type['payment_type'] = 'paytm';
                     $payment_type['payment_type_key'] = 'paytm';

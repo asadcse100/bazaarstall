@@ -9,9 +9,10 @@ use App\Models\Zone;
 
 class ZoneController extends Controller
 {
-    public function __construct() {
+    public function __construct()
+    {
         // Staff Permission Check
-        $this->middleware(['permission:manage_zones'])->only('index','create','edit','destroy');
+        $this->middleware(['permission:manage_zones'])->only('index', 'create', 'edit', 'destroy');
     }
 
     public function index()
@@ -23,7 +24,7 @@ class ZoneController extends Controller
 
     public function create()
     {
-        $countries = Country::where('status', 1)->where('zone_id',0)->get();
+        $countries = Country::where('status', 1)->where('zone_id', 0)->get();
         return view('backend.setup_configurations.zones.create', compact('countries'));
     }
 
@@ -43,11 +44,11 @@ class ZoneController extends Controller
     public function edit(Zone $zone)
     {
         $countries = Country::where('status', 1)
-                            ->where(function ($query) use ($zone){
-                                $query->where('zone_id', 0)
-                                    ->orWhere('zone_id', $zone->id);
-                            })
-                            ->get();
+            ->where(function ($query) use ($zone) {
+                $query->where('zone_id', 0)
+                    ->orWhere('zone_id', $zone->id);
+            })
+            ->get();
         return view('backend.setup_configurations.zones.edit', compact('countries', 'zone'));
     }
 

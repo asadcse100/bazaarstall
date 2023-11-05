@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V2\Seller;
 
 use App\Http\Controllers\Api\V2\Controller;
+use App\Http\Requests\ProductRequest;
 use App\Http\Resources\V2\Seller\DigitalProductCollection;
 use App\Http\Resources\V2\Seller\CategoriesCollection;
 use App\Http\Resources\V2\Seller\DigitalProductDetailsResource;
@@ -37,7 +38,7 @@ class DigitalProductController extends Controller
         return CategoriesCollection::collection($categories);
     }
 
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
         if (addon_is_activated('seller_subscription')) {
             if (!seller_package_validity_check(auth()->user()->id)) {
@@ -55,6 +56,9 @@ class DigitalProductController extends Controller
         ]));
 
         $request->merge(['product_id' => $product->id, 'current_stock' => 0]);
+
+        ///Product categories
+        $product->categories()->attach($request->category_ids);
 
         //Product Stock
         (new ProductStockService)->store($request->only([
@@ -85,7 +89,7 @@ class DigitalProductController extends Controller
         return new DigitalProductDetailsResource($product);
     }
 
-    public function update(Request $request, Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
         //Product Update
         $product = (new ProductService)->update($request->except([
@@ -98,6 +102,10 @@ class DigitalProductController extends Controller
         }
 
         $request->merge(['product_id' => $product->id, 'current_stock' => 0]);
+
+        //Product categories
+        $product->categories()->sync($request->category_ids);
+
 
         (new ProductStockService)->store($request->only([
             'unit_price', 'current_stock', 'product_id'
@@ -122,14 +130,11 @@ class DigitalProductController extends Controller
 
     public function destroy($id)
     {
-        $product_destroy = (new ProductService)->destroy($id);
+        (new ProductService)->destroy($id);
 
-        if ($product_destroy) {
-            Artisan::call('view:clear');
-            Artisan::call('cache:clear');
-            return $this->success(translate('Digital Product deleted successfully'));
-        }
-        return $this->failed(translate('Something Went Wrong.'));
+        Artisan::call('view:clear');
+        Artisan::call('cache:clear');
+        return $this->success(translate('Digital Product deleted successfully'));
     }
 
     // Digital Product File Download

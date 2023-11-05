@@ -61,4 +61,9 @@ class CustomerProduct extends Model
     {
         return $this->hasMany(CustomerProductTranslation::class);
     }
+
+    public function thumbnail()
+    {
+        return $this->belongsTo(Upload::class, 'thumbnail_img');
+    }
 }

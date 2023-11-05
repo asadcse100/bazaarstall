@@ -20,8 +20,7 @@
         </div>
     @endif
 
-    <form class="" action="{{ route('seller.products.store') }}" method="POST" enctype="multipart/form-data"
-        id="choice_form">
+    <form class="" action="{{ route('seller.products.store') }}" method="POST" enctype="multipart/form-data" id="choice_form">
         <div class="row gutters-5">
             <div class="col-lg-8">
                 @csrf
@@ -32,26 +31,10 @@
                     </div>
                     <div class="card-body">
                         <div class="form-group row">
-                            <label class="col-md-3 col-from-label">{{ translate('Product Name') }}</label>
+                            <label class="col-md-3 col-from-label">{{ translate('Product Name') }} <span class="text-danger">*</span></label>
                             <div class="col-md-8">
                                 <input type="text" class="form-control" name="name"
                                     placeholder="{{ translate('Product Name') }}" onchange="update_sku()" required>
-                            </div>
-                        </div>
-                        <div class="form-group row" id="category">
-                            <label class="col-md-3 col-from-label">{{ translate('Category') }}</label>
-                            <div class="col-md-8">
-                                <select class="form-control aiz-selectpicker" name="category_id" id="category_id"
-                                    data-live-search="true" required>
-                                    @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->getTranslation('name') }}</option>
-                                        @foreach ($category->childrenCategories as $childCategory)
-                                            @include('categories.child_category', [
-                                                'child_category' => $childCategory,
-                                            ])
-                                        @endforeach
-                                    @endforeach
-                                </select>
                             </div>
                         </div>
                         <div class="form-group row" id="brand">
@@ -67,7 +50,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-md-3 col-from-label">{{ translate('Unit') }}</label>
+                            <label class="col-md-3 col-from-label">{{ translate('Unit') }} <span class="text-danger">*</span></label>
                             <div class="col-md-8">
                                 <input type="text" class="form-control" name="unit"
                                     placeholder="{{ translate('Unit (e.g. KG, Pc etc)') }}" required>
@@ -82,7 +65,7 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-md-3 col-from-label">{{ translate('Minimum Purchase Qty') }}</label>
+                            <label class="col-md-3 col-from-label">{{ translate('Minimum Purchase Qty') }} <span class="text-danger">*</span></label>
                             <div class="col-md-8">
                                 <input type="number" lang="en" class="form-control" name="min_qty" value="1"
                                     min="1" required>
@@ -242,7 +225,7 @@
                     </div>
                     <div class="card-body">
                         <div class="form-group row">
-                            <label class="col-md-3 col-from-label">{{ translate('Unit price') }}</label>
+                            <label class="col-md-3 col-from-label">{{ translate('Unit price') }} <span class="text-danger">*</span></label>
                             <div class="col-md-6">
                                 <input type="number" lang="en" min="0" value="0" step="0.01"
                                     placeholder="{{ translate('Unit price') }}" name="unit_price" class="form-control"
@@ -252,7 +235,7 @@
 
                         <div class="form-group row">
                             <label class="col-md-3 control-label"
-                                for="start_date">{{ translate('Discount Date Range') }}</label>
+                                for="start_date">{{ translate('Discount Date Range') }} </label>
                             <div class="col-md-9">
                                 <input type="text" class="form-control aiz-date-range" name="date_range"
                                     placeholder="{{ translate('Select Date') }}" data-time-picker="true"
@@ -261,7 +244,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <label class="col-md-3 col-from-label">{{ translate('Discount') }}</label>
+                            <label class="col-md-3 col-from-label">{{ translate('Discount') }} <span class="text-danger">*</span></label>
                             <div class="col-md-6">
                                 <input type="number" lang="en" min="0" value="0" step="0.01"
                                     placeholder="{{ translate('Discount') }}" name="discount" class="form-control"
@@ -277,7 +260,7 @@
 
                         <div id="show-hide-div">
                             <div class="form-group row">
-                                <label class="col-md-3 col-from-label">{{ translate('Quantity') }}</label>
+                                <label class="col-md-3 col-from-label">{{ translate('Quantity') }} <span class="text-danger">*</span></label>
                                 <div class="col-md-6">
                                     <input type="number" lang="en" min="0" value="0" step="1"
                                         placeholder="{{ translate('Quantity') }}" name="current_stock"
@@ -398,6 +381,32 @@
             </div>
 
             <div class="col-lg-4">
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0 h6">{{ translate('Product Category') }}</h5>
+                        <h6 class="float-right fs-13 mb-0">
+                            {{ translate('Select Main') }}
+                            <span class="position-relative main-category-info-icon">
+                                <i class="las la-question-circle fs-18 text-info"></i>
+                                <span class="main-category-info bg-soft-info p-2 position-absolute d-none border">{{ translate('This will be used for commission based calculations and homepage category wise product Show.') }}</span>
+                            </span>
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="h-300px overflow-auto c-scrollbar-light">
+                            <ul class="hummingbird-treeview-converter list-unstyled" data-checkbox-name="category_ids[]" data-radio-name="category_id">
+                                @foreach ($categories as $category)
+                                <li id="{{ $category->id }}">{{ $category->name }}</li>
+                                    @foreach ($category->childrenCategories as $childCategory)
+                                        @include('backend.product.products.child_category', ['child_category' => $childCategory])
+                                    @endforeach
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0 h6">
@@ -582,7 +591,6 @@
                         @endforeach
                     </div>
                 </div>
-
             </div>
             <div class="col-12">
                 <div class="mar-all text-right mb-2">
@@ -596,110 +604,117 @@
 @endsection
 
 @section('script')
-    <script type="text/javascript">
-        $("[name=shipping_type]").on("change", function() {
-            $(".product_wise_shipping_div").hide();
-            $(".flat_rate_shipping_div").hide();
-            if ($(this).val() == 'product_wise') {
-                $(".product_wise_shipping_div").show();
-            }
-            if ($(this).val() == 'flat_rate') {
-                $(".flat_rate_shipping_div").show();
-            }
+<!-- Treeview js -->
+<script src="{{ static_asset('assets/js/hummingbird-treeview.js') }}"></script>
 
-        });
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#treeview").hummingbird();
+    });
 
-        function add_more_customer_choice_option(i, name) {
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                type: "POST",
-                url: '{{ route('seller.products.add-more-choice-option') }}',
-                data: {
-                    attribute_id: i
-                },
-                success: function(data) {
-                    var obj = JSON.parse(data);
-                    $('#customer_choice_options').append('\
-                        <div class="form-group row">\
-                            <div class="col-md-3">\
-                                <input type="hidden" name="choice_no[]" value="' + i + '">\
-                                <input type="text" class="form-control" name="choice[]" value="' + name +
-                        '" placeholder="{{ translate('Choice Title') }}" readonly>\
-                            </div>\
-                            <div class="col-md-8">\
-                                <select class="form-control aiz-selectpicker attribute_choice" data-live-search="true" name="choice_options_' + i + '[]" multiple>\
-                                    ' + obj + '\
-                                </select>\
-                            </div>\
-                        </div>');
-                    AIZ.plugins.bootstrapSelect('refresh');
-                }
-            });
-
-
+    $("[name=shipping_type]").on("change", function() {
+        $(".product_wise_shipping_div").hide();
+        $(".flat_rate_shipping_div").hide();
+        if ($(this).val() == 'product_wise') {
+            $(".product_wise_shipping_div").show();
+        }
+        if ($(this).val() == 'flat_rate') {
+            $(".flat_rate_shipping_div").show();
         }
 
-        $('input[name="colors_active"]').on('change', function() {
-            if (!$('input[name="colors_active"]').is(':checked')) {
-                $('#colors').prop('disabled', true);
-                AIZ.plugins.bootstrapSelect('refresh');
-            } else {
-                $('#colors').prop('disabled', false);
+    });
+
+    function add_more_customer_choice_option(i, name) {
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type: "POST",
+            url: '{{ route('seller.products.add-more-choice-option') }}',
+            data: {
+                attribute_id: i
+            },
+            success: function(data) {
+                var obj = JSON.parse(data);
+                $('#customer_choice_options').append('\
+                    <div class="form-group row">\
+                        <div class="col-md-3">\
+                            <input type="hidden" name="choice_no[]" value="' + i + '">\
+                            <input type="text" class="form-control" name="choice[]" value="' + name +
+                    '" placeholder="{{ translate('Choice Title') }}" readonly>\
+                        </div>\
+                        <div class="col-md-8">\
+                            <select class="form-control aiz-selectpicker attribute_choice" data-live-search="true" name="choice_options_' + i + '[]" multiple>\
+                                ' + obj + '\
+                            </select>\
+                        </div>\
+                    </div>');
                 AIZ.plugins.bootstrapSelect('refresh');
             }
-            update_sku();
         });
 
-        $(document).on("change", ".attribute_choice", function() {
-            update_sku();
-        });
 
-        $('#colors').on('change', function() {
-            update_sku();
-        });
+    }
 
-        $('input[name="unit_price"]').on('keyup', function() {
-            update_sku();
-        });
-
-        // $('input[name="name"]').on('keyup', function() {
-        //     update_sku();
-        // });
-
-        function delete_row(em) {
-            $(em).closest('.form-group row').remove();
-            update_sku();
+    $('input[name="colors_active"]').on('change', function() {
+        if (!$('input[name="colors_active"]').is(':checked')) {
+            $('#colors').prop('disabled', true);
+            AIZ.plugins.bootstrapSelect('refresh');
+        } else {
+            $('#colors').prop('disabled', false);
+            AIZ.plugins.bootstrapSelect('refresh');
         }
+        update_sku();
+    });
 
-        function delete_variant(em) {
-            $(em).closest('.variant').remove();
-        }
+    $(document).on("change", ".attribute_choice", function() {
+        update_sku();
+    });
 
-        function update_sku() {
-            $.ajax({
-                type: "POST",
-                url: '{{ route('seller.products.sku_combination') }}',
-                data: $('#choice_form').serialize(),
-                success: function(data) {
-                    $('#sku_combination').html(data);
-                    AIZ.plugins.fooTable();
-                    if (data.length > 1) {
-                        $('#show-hide-div').hide();
-                    } else {
-                        $('#show-hide-div').show();
-                    }
+    $('#colors').on('change', function() {
+            update_sku();
+        });
+
+    $('input[name="unit_price"]').on('keyup', function() {
+        update_sku();
+    });
+
+    // $('input[name="name"]').on('keyup', function() {
+    //     update_sku();
+    // });
+
+    function delete_row(em) {
+        $(em).closest('.form-group row').remove();
+        update_sku();
+    }
+
+    function delete_variant(em) {
+        $(em).closest('.variant').remove();
+    }
+
+    function update_sku() {
+        $.ajax({
+            type: "POST",
+            url: '{{ route('seller.products.sku_combination') }}',
+            data: $('#choice_form').serialize(),
+            success: function(data) {
+                $('#sku_combination').html(data);
+                AIZ.plugins.fooTable();
+                if (data.trim().length > 1) {
+                    $('#show-hide-div').hide();
+                } else {
+                    $('#show-hide-div').show();
                 }
-            });
-        }
-
-        $('#choice_attributes').on('change', function() {
-            $('#customer_choice_options').html(null);
-            $.each($("#choice_attributes option:selected"), function() {
-                add_more_customer_choice_option($(this).val(), $(this).text());
-            });
-            update_sku();
+            }
         });
-    </script>
+    }
+
+    $('#choice_attributes').on('change', function() {
+        $('#customer_choice_options').html(null);
+        $.each($("#choice_attributes option:selected"), function() {
+            add_more_customer_choice_option($(this).val(), $(this).text());
+        });
+        update_sku();
+    });
+</script>
 @endsection

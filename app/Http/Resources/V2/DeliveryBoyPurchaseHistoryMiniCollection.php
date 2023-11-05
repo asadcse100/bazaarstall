@@ -41,7 +41,7 @@ class DeliveryBoyPurchaseHistoryMiniCollection extends ResourceCollection
                     'id' => $data->id,
                     'code' => $data->code,
                     'user_id' => intval($data->user_id),
-                    'payment_type' => ucwords(str_replace('_', ' ', $data->payment_type)) ,
+                    'payment_type' => ucwords(str_replace('_', ' ', translate($data->payment_type))) ,
                     'payment_status' => $data->payment_status,
                     'payment_status_string' => ucwords(str_replace('_', ' ', $data->payment_status)),
                     'delivery_status' => $data->delivery_status,

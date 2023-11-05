@@ -27,7 +27,7 @@
 								@if(isset($query->user->name))
 									{{ $query->user->name }}
 								@else
-									{{ translate('Product Not found') }}
+									{{ translate('Customer Not found') }}
 								@endif
 							</td>
                             <td>

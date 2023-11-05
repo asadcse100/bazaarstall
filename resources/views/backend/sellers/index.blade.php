@@ -68,6 +68,7 @@
                     <th data-breakpoints="lg">{{translate('Approval')}}</th>
                     <th data-breakpoints="lg">{{ translate('Num. of Products') }}</th>
                     <th data-breakpoints="lg">{{ translate('Due to seller') }}</th>
+                    <th data-breakpoints="lg">{{ translate('Status') }}</th>
                     <th width="10%">{{translate('Options')}}</th>
                 </tr>
                 </thead>
@@ -115,6 +116,13 @@
                                 {{ single_price($shop->admin_to_pay) }}
                             @else
                                 {{ single_price(abs($shop->admin_to_pay)) }} ({{ translate('Due to Admin') }})
+                            @endif
+                        </td>
+                        <td>
+                            @if($shop->user->banned)
+                                <span class="badge badge-inline badge-danger">{{ translate('Ban') }}</span>
+                            @else
+                                <span class="badge badge-inline badge-success">{{ translate('Regular') }}</span>
                             @endif
                         </td>
                         <td>

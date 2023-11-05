@@ -106,7 +106,7 @@ class CommissionController extends Controller
                 
                 if(get_setting('vendor_commission_activation')){
                     if (get_setting('category_wise_commission')) {
-                        $commission_percentage = $orderDetail->product->category->commision_rate;
+                        $commission_percentage = $orderDetail->product->main_category->commision_rate;
                     } else if ($orderDetail->product->user->user_type == 'seller') {
                         $commission_percentage = get_setting('vendor_commission');
                     }
@@ -144,7 +144,7 @@ class CommissionController extends Controller
 
                 if(get_setting('vendor_commission_activation')){
                     if (get_setting('category_wise_commission')) {
-                        $commission_percentage = $orderDetail->product->category->commision_rate;
+                        $commission_percentage = $orderDetail->product->main_category->commision_rate;
                     } else if ($orderDetail->product->user->user_type == 'seller') {
                         $commission_percentage = get_setting('vendor_commission');
                     }

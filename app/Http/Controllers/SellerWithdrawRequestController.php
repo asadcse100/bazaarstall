@@ -9,7 +9,8 @@ use Auth;
 
 class SellerWithdrawRequestController extends Controller
 {
-    public function __construct() {
+    public function __construct()
+    {
         // Staff Permission Check
         $this->middleware(['permission:view_seller_payout_requests'])->only('index');
     }
@@ -52,8 +53,7 @@ class SellerWithdrawRequestController extends Controller
         if ($seller_withdraw_request->save()) {
             flash(translate('Request has been sent successfully'))->success();
             return redirect()->route('withdraw_requests.index');
-        }
-        else{
+        } else {
             flash(translate('Something went wrong'))->error();
             return back();
         }
@@ -108,7 +108,7 @@ class SellerWithdrawRequestController extends Controller
     {
         $user = User::findOrFail($request->id);
         $seller_withdraw_request = SellerWithdrawRequest::where('id', $request->seller_withdraw_request_id)->first();
-        return view('backend.sellers.seller_withdraw_requests.payment_modal', compact('user','seller_withdraw_request'));
+        return view('backend.sellers.seller_withdraw_requests.payment_modal', compact('user', 'seller_withdraw_request'));
     }
 
     public function message_modal(Request $request)
@@ -116,8 +116,7 @@ class SellerWithdrawRequestController extends Controller
         $seller_withdraw_request = SellerWithdrawRequest::findOrFail($request->id);
         if (Auth::user()->user_type == 'seller') {
             return view('frontend.partials.withdraw_message_modal', compact('seller_withdraw_request'));
-        }
-        elseif (Auth::user()->user_type == 'admin' || Auth::user()->user_type == 'staff') {
+        } elseif (Auth::user()->user_type == 'admin' || Auth::user()->user_type == 'staff') {
             return view('backend.sellers.seller_withdraw_requests.withdraw_message_modal', compact('seller_withdraw_request'));
         }
     }

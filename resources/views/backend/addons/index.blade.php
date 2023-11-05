@@ -11,7 +11,7 @@
                 </div>
             </div>
 			<div class="col mt-3 mt-sm-0 text-center text-md-right">
-                <a href="#" class="btn btn-primary" target="_blank">
+            <a href="https://activeitzone.com/activation/addon" class="btn btn-primary" target="_blank">
 					{{ translate('Activate Addon Link') }}
 				</a>
             </div>

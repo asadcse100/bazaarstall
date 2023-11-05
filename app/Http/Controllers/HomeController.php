@@ -41,7 +41,7 @@ class HomeController extends Controller
     public function index()
     {
         $featured_categories = Cache::rememberForever('featured_categories', function () {
-            return Category::where('featured', 1)->get();
+            return Category::with('bannerImage')->where('featured', 1)->get();
         });
 
         return view('frontend.index', compact('featured_categories'));
@@ -59,6 +59,7 @@ class HomeController extends Controller
         $newest_products = Cache::remember('newest_products', 3600, function () {
             return filter_products(Product::latest())->limit(12)->get();
         });
+        
         return view('frontend.partials.newest_products_section', compact('newest_products'));
     }
 
@@ -252,6 +253,13 @@ class HomeController extends Controller
         $detailedProduct  = Product::with('reviews', 'brand', 'stocks', 'user', 'user.shop')->where('auction_product', 0)->where('slug', $slug)->where('approved', 1)->first();
 
         if ($detailedProduct != null && $detailedProduct->published) {
+            if((get_setting('vendor_system_activation') != 1) && $detailedProduct->added_by == 'seller'){
+                abort(404);
+            }
+
+            if($detailedProduct->added_by == 'seller' && $detailedProduct->user->banned == 1){
+                abort(404);
+            }
 
             if(!addon_is_activated('wholesale') && $detailedProduct->wholesale_product == 1){
                 abort(404);
@@ -300,8 +308,14 @@ class HomeController extends Controller
 
     public function shop($slug)
     {
+        if (get_setting('vendor_system_activation') != 1) {
+            return redirect()->route('home');
+        }
         $shop  = Shop::where('slug', $slug)->first();
         if ($shop != null) {
+            if($shop->user->banned == 1){
+                abort(404);
+            }
             if ($shop->verification_status != 0) {
                 return view('frontend.seller_shop', compact('shop'));
             } else {
@@ -313,9 +327,14 @@ class HomeController extends Controller
 
     public function filter_shop(Request $request, $slug, $type)
     {
+        if (get_setting('vendor_system_activation') != 1) {
+            return redirect()->route('home');
+        }
         $shop  = Shop::where('slug', $slug)->first();
         if ($shop != null && $type != null) {
-
+            if($shop->user->banned == 1){
+                abort(404);
+            }
             if ($type == 'all-products') {
                 $sort_by = $request->sort_by;
                 $min_price = $request->min_price;
@@ -377,7 +396,9 @@ class HomeController extends Controller
 
     public function all_categories(Request $request)
     {
-        $categories = Category::where('level', 0)->orderBy('order_level', 'desc')->get();
+        $categories = Category::with('childrenCategories')->where('parent_id', 0)->orderBy('order_level', 'desc')->get();
+        
+        // dd($categories);
         return view('frontend.all_category', compact('categories'));
     }
 
@@ -549,8 +570,9 @@ class HomeController extends Controller
 
     public function get_category_items(Request $request)
     {
-        $category = Category::findOrFail($request->id);
-        return view('frontend.partials.category_elements', compact('category'));
+        // $category = Category::findOrFail($request->id);
+        $categories = Category::with('childrenCategories')->findOrFail($request->id);
+        return view('frontend.partials.category_elements', compact('categories'));
     }
 
     public function premium_package_index()
@@ -707,6 +729,9 @@ class HomeController extends Controller
 
     public function all_seller(Request $request)
     {
+        if (get_setting('vendor_system_activation') != 1) {
+            return redirect()->route('home');
+        }
         $shops = Shop::whereIn('user_id', verified_sellers_id())
             ->paginate(15);
 

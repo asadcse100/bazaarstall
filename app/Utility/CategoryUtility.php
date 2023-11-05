@@ -52,6 +52,18 @@ class CategoryUtility
         return !empty($children) ? array_column($children, 'id') : array();
     }
 
+    public static function category_tree_ids($category, $category_ids)
+    {
+        foreach ($category->childrenCategories as $category) {
+            $category_ids[] = $category->id;
+            
+            if (count($category->childrenCategories) > 0) {
+                $category_ids = static::category_tree_ids($category, $category_ids);
+            }
+        }
+        return $category_ids;
+    }
+
     public static function move_children_to_parent($id)
     {
         $children_ids = CategoryUtility::get_immediate_children_ids($id, true);

@@ -13,9 +13,10 @@ use DB;
 
 class AddonController extends Controller
 {
-    public function __construct() {
+    public function __construct()
+    {
         // Staff Permission Check
-        $this->middleware(['permission:manage_addons'])->only('index','create');
+        $this->middleware(['permission:manage_addons'])->only('index', 'create');
     }
 
     /**
@@ -103,11 +104,9 @@ class AddonController extends Controller
                             foreach ($json['directory'][0]['name'] as $directory) {
                                 if (is_dir(base_path($directory)) == false) {
                                     mkdir(base_path($directory), 0777, true);
-
                                 } else {
                                     echo "error on creating directory";
                                 }
-
                             }
                         }
 
@@ -116,7 +115,6 @@ class AddonController extends Controller
                             foreach ($json['files'] as $file) {
                                 copy(base_path('temp/' . $random_dir . '/' . $file['root_directory']), base_path($file['update_directory']));
                             }
-
                         }
 
                         // Run sql modifications
@@ -130,26 +128,24 @@ class AddonController extends Controller
                     } else {
                         $addon = Addon::where('unique_identifier', $json['unique_identifier'])->first();
 
-                        if($json['unique_identifier'] == 'delivery_boy' && $addon->version < 3.3) {
+                        if ($json['unique_identifier'] == 'delivery_boy' && $addon->version < 3.3) {
                             $dir = base_path('resources/views/delivery_boys');
-                            foreach (glob($dir."/*.*") as $filename) {
+                            foreach (glob($dir . "/*.*") as $filename) {
                                 if (is_file($filename)) {
                                     unlink($filename);
                                 }
                             }
                         }
-                        
+
                         // Create new directories.
                         if (!empty($json['directory'])) {
                             //dd($json['directory'][0]['name']);
                             foreach ($json['directory'][0]['name'] as $directory) {
                                 if (is_dir(base_path($directory)) == false) {
                                     mkdir(base_path($directory), 0777, true);
-
                                 } else {
                                     echo "error on creating directory";
                                 }
-
                             }
                         }
 
@@ -158,12 +154,11 @@ class AddonController extends Controller
                             foreach ($json['files'] as $file) {
                                 copy(base_path('temp/' . $random_dir . '/' . $file['root_directory']), base_path($file['update_directory']));
                             }
-
                         }
 
                         for ($i = $addon->version + 0.05; $i <= $json['version']; $i = $i + 0.1) {
                             // Run sql modifications
-                            $sql_version = $i+0.05;
+                            $sql_version = $i + 0.05;
                             $sql_path = base_path('temp/' . $random_dir . '/addons/' . $dir . '/sql/' . $sql_version . '.sql');
                             if (file_exists($sql_path)) {
                                 DB::unprepared(file_get_contents($sql_path));
@@ -184,8 +179,7 @@ class AddonController extends Controller
                     return redirect()->route('addons.index');
                 }
             }
-        }
-        else {
+        } else {
             flash(translate('Please enable ZipArchive extension.'))->error();
             return back();
         }
@@ -227,7 +221,6 @@ class AddonController extends Controller
      */
     public function update(Request $request, $id)
     {
-
     }
 
     /**

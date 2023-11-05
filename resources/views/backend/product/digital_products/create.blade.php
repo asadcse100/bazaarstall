@@ -4,10 +4,23 @@
     <div class="aiz-titlebar text-left mt-2 mb-3">
         <h5 class="mb-0 h5">{{ translate('Add New Digital Product') }}</h5>
     </div>
-    <div class="row">
-        <div class="col-lg-10 mx-auto">
-            <form class="form form-horizontal mar-top" action="{{ route('digitalproducts.store') }}" method="POST"
-                enctype="multipart/form-data" id="choice_form">
+    <div class="">
+        <!-- Error Meassages -->
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+    </div>
+
+    <form class="form form-horizontal mar-top" action="{{ route('digitalproducts.store') }}" method="POST"
+        enctype="multipart/form-data" id="choice_form">
+        <div class="row gutters-5">
+            <div class="col-lg-8">
                 @csrf
                 <input type="hidden" name="added_by" value="admin">
                 <input type="hidden" name="digital" value="1">
@@ -19,27 +32,10 @@
 
                     <div class="card-body">
                         <div class="form-group row">
-                            <label class="col-lg-2 col-from-label">{{ translate('Product Name') }}</label>
+                            <label class="col-lg-2 col-from-label">{{ translate('Product Name') }} <span class="text-danger">*</span></label>
                             <div class="col-lg-8">
                                 <input type="text" class="form-control" name="name"
                                     placeholder="{{ translate('Product Name') }}" required>
-                            </div>
-                        </div>
-                        <div class="form-group row" id="category">
-                            <label class="col-lg-2 col-from-label">{{ translate('Category') }}</label>
-                            <div class="col-lg-8">
-                                <select class="form-control aiz-selectpicker" name="category_id" id="category_id"
-                                    data-live-search="true" required>
-                                    @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->getTranslation('name') }}
-                                        </option>
-                                        @foreach ($category->childrenCategories as $childCategory)
-                                            @include('categories.child_category', [
-                                                'child_category' => $childCategory,
-                                            ])
-                                        @endforeach
-                                    @endforeach
-                                </select>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -150,19 +146,11 @@
                     </div>
                     <div class="card-body">
                         <div class="form-group row">
-                            <label class="col-lg-2 col-from-label">{{ translate('Unit price') }}</label>
+                            <label class="col-lg-2 col-from-label">{{ translate('Unit price') }} <span class="text-danger">*</span></label>
                             <div class="col-lg-8">
                                 <input type="number" lang="en" min="0" value="0" step="0.01"
                                     placeholder="{{ translate('Unit price') }}" name="unit_price" class="form-control"
                                     required>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-lg-2 col-from-label">{{ translate('Purchase price') }}</label>
-                            <div class="col-lg-8">
-                                <input type="number" lang="en" min="0" value="0" step="0.01"
-                                    placeholder="{{ translate('Purchase price') }}" name="purchase_price"
-                                    class="form-control" required>
                             </div>
                         </div>
                         @foreach (\App\Models\Tax::where('tax_status', 1)->get() as $tax)
@@ -222,11 +210,49 @@
                         </div>
                     </div>
                 </div>
-                <div class="mb-3 text-right">
-                    <button type="submit" name="button"
-                        class="btn btn-primary">{{ translate('Save Product') }}</button>
+            </div>
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0 h6">{{ translate('Product Category') }}</h5>
+                        <h6 class="float-right fs-13 mb-0">
+                            {{ translate('Select Main') }}
+                            <span class="position-relative main-category-info-icon">
+                                <i class="las la-question-circle fs-18 text-info"></i>
+                                <span class="main-category-info bg-soft-info p-2 position-absolute d-none border">{{ translate('This will be used for commission based calculations and homepage category wise product Show.') }}</span>
+                            </span>
+                        </h6>
+                    </div>
+                    <div class="card-body ">
+                        <div class="h-170px overflow-auto c-scrollbar-light">
+                            <ul class="hummingbird-treeview-converter list-unstyled" data-checkbox-name="category_ids[]" data-radio-name="category_id">
+                                @foreach ($categories as $category)
+                                <li id="{{ $category->id }}">{{ $category->name }}</li>
+                                    @foreach ($category->childrenCategories as $childCategory)
+                                        @include('backend.product.products.child_category', ['child_category' => $childCategory])
+                                    @endforeach
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-            </form>
+            </div>
+            <div class="col-12">
+                <div class="float-right mb-3">
+                    <button type="submit" name="button" class="btn btn-primary">{{ translate('Save Product') }}</button>
+                </div>
+            </div>
         </div>
-    </div>
+    </form>
+@endsection
+
+@section('script')
+    <!-- Treeview js -->
+    <script src="{{ static_asset('assets/js/hummingbird-treeview.js') }}"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            $("#treeview").hummingbird();
+        });
+    </script>
 @endsection

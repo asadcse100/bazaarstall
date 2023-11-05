@@ -48,7 +48,7 @@
                 </select>
             </div>
             @endif
-            @if($type == 'All')
+            @if($type == 'All' && get_setting('vendor_system_activation') == 1)
             <div class="col-md-2 ml-auto">
                 <select class="form-control form-control-sm aiz-selectpicker mb-2 mb-md-0" id="user_id" name="user_id" onchange="sort_products()">
                     <option value="">{{ translate('All Sellers') }}</option>
@@ -143,23 +143,28 @@
                             <strong>{{translate('Rating')}}:</strong> {{ $product->rating }} </br>
                         </td>
                         <td>
-                            @php
-                                $qty = 0;
-                                if($product->variant_product) {
-                                    foreach ($product->stocks as $key => $stock) {
-                                        $qty += $stock->qty;
-                                        echo $stock->variant.' - '.$stock->qty.'<br>';
+                            @if($product->digital == 1)
+                            <span class="badge badge-inline badge-info">{{ translate('Digital Product') }}</span>
+                            @else
+                                @php
+                                    $qty = 0;
+                                    if($product->variant_product) {
+                                        foreach ($product->stocks as $key => $stock) {
+                                            $qty += $stock->qty;
+                                            echo $stock->variant.' - '.$stock->qty.'<br>';
+                                        }
                                     }
-                                }
-                                else {
-                                    //$qty = $product->current_stock;
-                                    $qty = optional($product->stocks->first())->qty;
-                                    echo $qty;
-                                }
-                            @endphp
-                            @if($qty <= $product->low_stock_quantity)
-                                <span class="badge badge-inline badge-danger">Low</span>
+                                    else {
+                                        //$qty = $product->current_stock;
+                                        $qty = optional($product->stocks->first())->qty;
+                                        echo $qty;
+                                    }
+                                @endphp
+                                @if($qty <= $product->low_stock_quantity)
+                                    <span class="badge badge-inline badge-danger">{{ translate('Low') }}</span>
+                                @endif
                             @endif
+                            
                         </td>
                         <td>
                             <label class="aiz-switch aiz-switch-success mb-0">

@@ -50,7 +50,12 @@ class InstallController extends Controller
             flash("Sorry! The purchase code you have provided is not valid.")->error();
             return back();
         }
+        if ($request->syatem_key == null) {
+            flash("Sorry! The Syatem Key required")->error();
+            return back();
+        }
         Session::put('purchase_code', $request->purchase_code);
+        $this->writeEnvironmentFile('SYSTEM_KEY', $request->syatem_key);
         return redirect('step3');
     }
 
@@ -127,9 +132,14 @@ class InstallController extends Controller
         $path = base_path('.env');
         if (file_exists($path)) {
             $val = '"'.trim($val).'"';
-            file_put_contents($path, str_replace(
-                $type.'="'.env($type).'"', $type.'='.$val, file_get_contents($path)
-            ));
+            if(is_numeric(strpos(file_get_contents($path), $type)) && strpos(file_get_contents($path), $type) >= 0){
+                file_put_contents($path, str_replace(
+                    $type.'="'.env($type).'"', $type.'='.$val, file_get_contents($path)
+                ));
+            }
+            else{
+                file_put_contents($path, file_get_contents($path)."\r\n".$type.'='.$val);
+            }
         }
     }
 }

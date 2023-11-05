@@ -32,6 +32,7 @@ use App\HomeCategory;
 use App\Models\BusinessSetting;
 use App\Models\Translation;
 use App\Models\AttributeValue;
+use App\Models\ProductCategory;
 
 class DemoController extends Controller
 {
@@ -567,6 +568,24 @@ class DemoController extends Controller
             //dd($order->orderDetails[0]->seller_id);
             $order->seller_id = $order->orderDetails[0]->seller_id;
             $order->save();
+        }
+    }
+
+    public function setCategoryToProductCategory()
+    {
+        $products = Product::all();
+        $new_product_array = [];
+        foreach ($products as $product) {
+            $new_product_array[] = [
+                "product_id" => $product->id,
+                "category_id" => $product->category_id
+            ];
+        }
+        $collection = collect($new_product_array);
+        $chunks = $collection->chunk(500);
+
+        foreach ($chunks as $chunk) {
+            ProductCategory::insert($chunk->toArray());
         }
     }
 }

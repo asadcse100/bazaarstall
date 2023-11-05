@@ -15,13 +15,14 @@ class PolicyController extends Controller
     }
 
     //updates the policy pages
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $policy = Policy::where('name', $request->name)->first();
         $policy->name = $request->name;
         $policy->content = $request->content;
         $policy->save();
 
-        flash($request->name.' '.translate('updated successfully'));
+        flash($request->name . ' ' . translate('updated successfully'));
         return back();
     }
 }

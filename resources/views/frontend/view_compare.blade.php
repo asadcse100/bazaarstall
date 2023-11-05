@@ -49,8 +49,8 @@
                                             <div class="p-4 border-bottom">
                                                 <span class="fs-12 text-gray">{{ translate('Category')}}</span>
                                                 <h5 class="mb-0 fs-14 text-dark mt-1">
-                                                    @if (get_single_product($item)->category != null)
-                                                        {{ get_single_product($item)->category->getTranslation('name') }}
+                                                    @if (get_single_product($item)->main_category != null)
+                                                        {{ get_single_product($item)->main_category->getTranslation('name') }}
                                                     @endif
                                                 </h5>
                                             </div>

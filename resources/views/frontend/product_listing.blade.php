@@ -2,8 +2,8 @@
 
 @if (isset($category_id))
     @php
-        $meta_title = get_single_category($category_id)->meta_title;
-        $meta_description = get_single_category($category_id)->meta_description;
+        $meta_title = $category->meta_title;
+        $meta_description = $category->meta_description;
     @endphp
 @elseif (isset($brand_id))
     @php
@@ -63,9 +63,11 @@
                                     <div class="collapse show" id="collapse_1">
                                         <ul class="p-3 mb-0 list-unstyled">
                                             @if (!isset($category_id))
-                                                @foreach (get_level_zero_categories() as $category)
+                                                @foreach ($categories as $category)
                                                     <li class="mb-3 text-dark">
-                                                        <a class="text-reset fs-14 hov-text-primary" href="{{ route('products.category', $category->slug) }}">{{ $category->getTranslation('name') }}</a>
+                                                        <a class="text-reset fs-14 hov-text-primary" href="{{ route('products.category', $category->slug) }}">
+                                                            {{ $category->getTranslation('name') }}
+                                                        </a>
                                                     </li>
                                                 @endforeach
                                             @else
@@ -75,23 +77,26 @@
                                                         {{ translate('All Categories')}}
                                                     </a>
                                                 </li>
-                                                @if (get_single_category($category_id)->parent_id != 0)
+                                                
+                                                @if ($category->parent_id != 0)
                                                     <li class="mb-3">
-                                                        <a class="text-reset fs-14 fw-600 hov-text-primary" href="{{ route('products.category', get_single_category(get_single_category($category_id)->parent_id)->slug) }}">
+                                                        <a class="text-reset fs-14 fw-600 hov-text-primary" href="{{ route('products.category', get_single_category($category->parent_id)->slug) }}">
                                                             <i class="las la-angle-left"></i>
-                                                            {{ get_single_category(get_single_category($category_id)->parent_id)->getTranslation('name') }}
+                                                            {{ get_single_category($category->parent_id)->getTranslation('name') }}
                                                         </a>
                                                     </li>
                                                 @endif
                                                 <li class="mb-3">
-                                                    <a class="text-reset fs-14 fw-600 hov-text-primary" href="{{ route('products.category', get_single_category($category_id)->slug) }}">
+                                                    <a class="text-reset fs-14 fw-600 hov-text-primary" href="{{ route('products.category', $category->slug) }}">
                                                         <i class="las la-angle-left"></i>
-                                                        {{ get_single_category($category_id)->getTranslation('name') }}
+                                                        {{ $category->getTranslation('name') }}
                                                     </a>
                                                 </li>
-                                                @foreach (\App\Utility\CategoryUtility::get_immediate_children_ids($category_id) as $key => $id)
+                                                @foreach ($category->childrenCategories as $key => $immediate_children_category)
                                                     <li class="ml-4 mb-3">
-                                                        <a class="text-reset fs-14 hov-text-primary" href="{{ route('products.category', get_single_category($id)->slug) }}">{{ get_single_category($id)->getTranslation('name') }}</a>
+                                                        <a class="text-reset fs-14 hov-text-primary" href="{{ route('products.category', $immediate_children_category->slug) }}">
+                                                            {{ $immediate_children_category->getTranslation('name') }}
+                                                        </a>
                                                     </li>
                                                 @endforeach
                                             @endif
@@ -105,11 +110,14 @@
                                         {{ translate('Price range')}}
                                     </div>
                                     <div class="p-3 mr-3">
+                                        @php
+                                            $product_count = get_products_count()
+                                        @endphp
                                         <div class="aiz-range-slider">
                                             <div
                                                 id="input-slider-range"
-                                                data-range-value-min="@if(get_products_count() < 1) 0 @else {{ get_product_min_unit_price() }} @endif"
-                                                data-range-value-max="@if(get_products_count() < 1) 0 @else {{ get_product_max_unit_price() }} @endif"
+                                                data-range-value-min="@if($product_count < 1) 0 @else {{ get_product_min_unit_price() }} @endif"
+                                                data-range-value-max="@if($product_count < 1) 0 @else {{ get_product_max_unit_price() }} @endif"
                                             ></div>
 
                                             <div class="row mt-2">
@@ -240,7 +248,7 @@
                             @endif
                             @if(isset($category_id))
                                 <li class="text-dark fw-600 breadcrumb-item">
-                                    "{{ get_single_category($category_id)->getTranslation('name') }}"
+                                    "{{ $category->getTranslation('name') }}"
                                 </li>
                             @endif
                         </ul>
@@ -251,7 +259,7 @@
                                 <div class="col-lg col-10">
                                     <h1 class="fs-20 fs-md-24 fw-700 text-dark">
                                         @if(isset($category_id))
-                                            {{ get_single_category($category_id)->getTranslation('name') }}
+                                            {{ $category->getTranslation('name') }}
                                         @elseif(isset($query))
                                             {{ translate('Search result for ') }}"{{ $query }}"
                                         @else

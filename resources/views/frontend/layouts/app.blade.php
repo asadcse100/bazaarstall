@@ -1,30 +1,39 @@
 <!DOCTYPE html>
-@if(get_session_language()->rtl == 1)
-<html dir="rtl" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
+@php
+    $rtl = get_session_language()->rtl;
+@endphp
+
+@if ($rtl == 1)
+    <html dir="rtl" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @else
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 @endif
+
 <head>
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="app-url" content="{{ getBaseURL() }}">
     <meta name="file-base-url" content="{{ getFileBaseURL() }}">
 
-    <title>@yield('meta_title', get_setting('website_name').' | '.get_setting('site_motto'))</title>
+    <title>@yield('meta_title', get_setting('website_name') . ' | ' . get_setting('site_motto'))</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="index, follow">
-    <meta name="description" content="@yield('meta_description', get_setting('meta_description') )" />
-    <meta name="keywords" content="@yield('meta_keywords', get_setting('meta_keywords') )">
+    <meta name="description" content="@yield('meta_description', get_setting('meta_description'))" />
+    <meta name="keywords" content="@yield('meta_keywords', get_setting('meta_keywords'))">
 
     @yield('meta')
 
-    @if(!isset($detailedProduct) && !isset($customer_product) && !isset($shop) && !isset($page) && !isset($blog))
+    @if (!isset($detailedProduct) && !isset($customer_product) && !isset($shop) && !isset($page) && !isset($blog))
+        @php
+            $meta_image = uploaded_asset(get_setting('meta_image'));
+        @endphp
         <!-- Schema.org markup for Google+ -->
         <meta itemprop="name" content="{{ get_setting('meta_title') }}">
         <meta itemprop="description" content="{{ get_setting('meta_description') }}">
-        <meta itemprop="image" content="{{ uploaded_asset(get_setting('meta_image')) }}">
+        <meta itemprop="image" content="{{ $meta_image }}">
 
         <!-- Twitter Card data -->
         <meta name="twitter:card" content="product">
@@ -32,21 +41,24 @@
         <meta name="twitter:title" content="{{ get_setting('meta_title') }}">
         <meta name="twitter:description" content="{{ get_setting('meta_description') }}">
         <meta name="twitter:creator" content="@author_handle">
-        <meta name="twitter:image" content="{{ uploaded_asset(get_setting('meta_image')) }}">
+        <meta name="twitter:image" content="{{ $meta_image }}">
 
         <!-- Open Graph data -->
         <meta property="og:title" content="{{ get_setting('meta_title') }}" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="{{ route('home') }}" />
-        <meta property="og:image" content="{{ uploaded_asset(get_setting('meta_image')) }}" />
+        <meta property="og:image" content="{{ $meta_image }}" />
         <meta property="og:description" content="{{ get_setting('meta_description') }}" />
         <meta property="og:site_name" content="{{ env('APP_NAME') }}" />
         <meta property="fb:app_id" content="{{ env('FACEBOOK_PIXEL_ID') }}">
     @endif
 
     <!-- Favicon -->
-    <link rel="icon" href="{{ uploaded_asset(get_setting('site_icon')) }}">
-    <link rel="apple-touch-icon" href="{{ uploaded_asset(get_setting('site_icon')) }}">
+    @php
+        $site_icon = uploaded_asset(get_setting('site_icon'));
+    @endphp
+    <link rel="icon" href="{{ $site_icon }}">
+    <link rel="apple-touch-icon" href="{{ $site_icon }}">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,10 +67,10 @@
 
     <!-- CSS Files -->
     <link rel="stylesheet" href="{{ static_asset('assets/css/vendors.css') }}">
-    @if(get_session_language()->rtl == 1)
-    <link rel="stylesheet" href="{{ static_asset('assets/css/bootstrap-rtl.min.css') }}">
+    @if ($rtl == 1)
+        <link rel="stylesheet" href="{{ static_asset('assets/css/bootstrap-rtl.min.css') }}">
     @endif
-    <link rel="stylesheet" href="{{ static_asset('assets/css/aiz-core.css?v=') }}{{ rand(1000,9999) }}">
+    <link rel="stylesheet" href="{{ static_asset('assets/css/aiz-core.css?v=') }}{{ rand(1000, 9999) }}">
     <link rel="stylesheet" href="{{ static_asset('assets/css/custom-style.css') }}">
 
 
@@ -106,7 +118,7 @@
             --soft-dark: #1b1b28;
             --primary: {{ get_setting('base_color', '#d43533') }};
             --hov-primary: {{ get_setting('base_hov_color', '#9d1b1a') }};
-            --soft-primary: {{ hex2rgba(get_setting('base_color','#d43533'),.15) }};
+            --soft-primary: {{ hex2rgba(get_setting('base_color', '#d43533'), 0.15) }};
         }
         body{
             font-family: 'Public Sans', sans-serif;
@@ -196,7 +208,20 @@
 <body>
     <!-- aiz-main-wrapper -->
     <div class="aiz-main-wrapper d-flex flex-column bg-white">
+        @php
+            $user = auth()->user();
+            $user_avatar = null;
+            $carts = [];
+            if ($user && $user->avatar_original != null) {
+                $user_avatar = uploaded_asset($user->avatar_original);
+            }
 
+            $system_language = get_system_language();
+            
+            // if ($user != null) {
+            //     $carts = App\Models\Cart::where('user_id', auth()->user()->id)->get();
+            // }
+        @endphp
         <!-- Header -->
         @include('frontend.inc.nav')
 
@@ -276,7 +301,7 @@
 
     <!-- SCRIPTS -->
     <script src="{{ static_asset('assets/js/vendors.js') }}"></script>
-    <script src="{{ static_asset('assets/js/aiz-core.js?v=') }}{{ rand(1000,9999) }}"></script>
+    <script src="{{ static_asset('assets/js/aiz-core.js?v=') }}{{ rand(1000, 9999) }}"></script>
 
 
 
@@ -314,9 +339,13 @@
     <script>
         $(document).ready(function() {
             $('.category-nav-element').each(function(i, el) {
+
                 $(el).on('mouseover', function(){
                     if(!$(el).find('.sub-cat-menu').hasClass('loaded')){
-                        $.post('{{ route('category.elements') }}', {_token: AIZ.data.csrf, id:$(el).data('id')}, function(data){
+                        $.post('{{ route('category.elements') }}', {
+                            _token: AIZ.data.csrf, 
+                            id:$(el).data('id'
+                            )}, function(data){
                             $(el).find('.sub-cat-menu').addClass('loaded').html(data);
                         });
                     }
@@ -523,7 +552,7 @@
         }
 
         function addToCart(){
-            @if(Auth::check() && Auth::user()->user_type != 'customer')
+            @if (Auth::check() && Auth::user()->user_type != 'customer')
                 AIZ.plugins.notify('warning', "{{ translate('Please Login as a customer to add products to the Cart.') }}");
                 return false;
             @endif
@@ -552,7 +581,7 @@
         }
 
         function buyNow(){
-            @if(Auth::check() && Auth::user()->user_type != 'customer')
+            @if (Auth::check() && Auth::user()->user_type != 'customer')
                 AIZ.plugins.notify('warning', "{{ translate('Please Login as a customer to add products to the Cart.') }}");
                 return false;
             @endif
@@ -587,13 +616,13 @@
 
         function bid_single_modal(bid_product_id, min_bid_amount){
             @if (Auth::check() && (isCustomer() || isSeller()))
-                var min_bid_amount_text = "({{ translate('Min Bid Amount: ')}}"+min_bid_amount+")";
+                var min_bid_amount_text = "({{ translate('Min Bid Amount: ') }}"+min_bid_amount+")";
                 $('#min_bid_amount').text(min_bid_amount_text);
                 $('#bid_product_id').val(bid_product_id);
                 $('#bid_amount').attr('min', min_bid_amount);
                 $('#bid_for_product').modal('show');
             @elseif (Auth::check() && isAdmin())
-                AIZ.plugins.notify('warning', '{{ translate("Sorry, Only customers & Sellers can Bid.") }}');
+                AIZ.plugins.notify('warning', '{{ translate('Sorry, Only customers & Sellers can Bid.') }}');
             @else
                 $('#login_modal').modal('show');
             @endif
@@ -687,8 +716,7 @@
                     $(el).html('<i>*{{ translate('Use Email Instead') }}</i>');
                 }
             }
-        </script>
-    @endif
+        </script> @endif
 
     <script>
         var acc = document.getElementsByClassName("aiz-accordion-heading");
@@ -701,7 +729,7 @@
                     panel.style.maxHeight = null;
                 } else {
                     panel.style.maxHeight = panel.scrollHeight + "px";
-                } 
+                }
             });
         }
     </script>

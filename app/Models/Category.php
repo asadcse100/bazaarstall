@@ -23,8 +23,17 @@ class Category extends Model
     	return $this->belongsTo(Upload::class, 'cover_image');
     }
 
-    public function products(){
-    	return $this->hasMany(Product::class);
+    public function catIcon(){
+    	return $this->belongsTo(Upload::class, 'icon');
+    }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_categories');
+    }
+    
+    public function bannerImage(){
+    	return $this->belongsTo(Upload::class, 'banner');
     }
 
     public function classified_products(){

@@ -19,38 +19,35 @@ use Auth;
 class PaykuController
 {
     public function pay(Request $request)
-    {   
-        if($request->session()->has('payment_type')){
-            if($request->session()->get('payment_type') == 'cart_payment'){
+    {
+        if ($request->session()->has('payment_type')) {
+            if ($request->session()->get('payment_type') == 'cart_payment') {
                 $combined_order = CombinedOrder::findOrFail(Session::get('combined_order_id'));
                 $data = [
-                    'order' => rand(0000000,11111111).date('is'),
+                    'order' => rand(0000000, 11111111) . date('is'),
                     'subject' => 'Cart Payment',
                     'amount' => $combined_order->grand_total,
                     'email' => Auth::user()->email
                 ];
-            }
-            elseif ($request->session()->get('payment_type') == 'wallet_payment') {
+            } elseif ($request->session()->get('payment_type') == 'wallet_payment') {
                 $data = [
-                    'order' => rand(0000000,11111111).date('is'),
+                    'order' => rand(0000000, 11111111) . date('is'),
                     'subject' => 'Wallet Payment',
                     'amount' => $request->session()->get('payment_data')['amount'],
                     'email' => Auth::user()->email
                 ];
-            }
-            elseif ($request->session()->get('payment_type') == 'customer_package_payment') {
+            } elseif ($request->session()->get('payment_type') == 'customer_package_payment') {
                 $customer_package = CustomerPackage::findOrFail(Session::get('payment_data')['customer_package_id']);
                 $data = [
-                    'order' => rand(0000000,11111111).date('is'),
+                    'order' => rand(0000000, 11111111) . date('is'),
                     'subject' => 'CustomerPackage Payment',
                     'amount' => $customer_package->amount,
                     'email' => Auth::user()->email
                 ];
-            }
-            elseif ($request->session()->get('payment_type') == 'seller_package_payment') {
+            } elseif ($request->session()->get('payment_type') == 'seller_package_payment') {
                 $seller_package = SellerPackage::findOrFail(Session::get('payment_data')['seller_package_id']);
                 $data = [
-                    'order' => rand(0000000,11111111).date('is'),
+                    'order' => rand(0000000, 11111111) . date('is'),
                     'subject' => 'SellerPackage Payment',
                     'amount' => $seller_package->amount,
                     'email' => Auth::user()->email
@@ -74,7 +71,7 @@ class PaykuController
         $routeName = config('laravel-payku.route_finish_name');
 
         $routeExists = Route::has($routeName);
-        
+
         if ($routeExists) {
             return redirect()->route($routeName, $result);
         }
@@ -82,10 +79,11 @@ class PaykuController
         return view('payku::notify.missing-route', compact('result', 'routeName'));
     }
 
-    public function callback($id){
+    public function callback($id)
+    {
         $paykuTransaction = PaykuTransaction::find($id);
-        
-        if($paykuTransaction->status == 'success'){
+
+        if ($paykuTransaction->status == 'success') {
             $payment_type = Session::get('payment_type');
 
             if ($payment_type == 'cart_payment') {
@@ -97,13 +95,12 @@ class PaykuController
             if ($payment_type == 'customer_package_payment') {
                 return (new CustomerPackageController)->purchase_payment_done(session()->get('payment_data'), $paykuTransaction->toJson());
             }
-            if($payment_type == 'seller_package_payment') {
+            if ($payment_type == 'seller_package_payment') {
                 return (new SellerPackageController)->purchase_payment_done(session()->get('payment_data'), $paykuTransaction->toJson());
             }
-        }
-        else{
+        } else {
             flash(translate('Payment failed'))->error();
-    	    return redirect()->route('home');
+            return redirect()->route('home');
         }
     }
 }

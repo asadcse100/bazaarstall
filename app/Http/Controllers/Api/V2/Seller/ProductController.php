@@ -110,6 +110,10 @@ class ProductController extends Controller
         ]));
         $request->merge(['product_id' => $product->id]);
 
+        ///Product categories
+        $product->categories()->attach($request->category_ids);
+
+
         //VAT & Tax
         if ($request->tax_id) {
             $this->productTaxService->store($request->only([
@@ -168,6 +172,10 @@ class ProductController extends Controller
             $stock->delete();
         }
         $request->merge(['product_id' => $product->id]);
+
+        //Product categories
+        $product->categories()->sync($request->category_ids);
+
         $this->productStockService->store($request->only([
             'colors_active', 'colors', 'choice_no', 'unit_price', 'sku', 'current_stock', 'product_id'
         ]), $product);
@@ -208,7 +216,7 @@ class ProductController extends Controller
                 'published' => $request->status
             ]);
 
-        if ($product== 0) {
+        if ($product == 0) {
             return $this->failed(translate('This product is not yours'));
         }
         return ($request->status == 1) ?
@@ -295,8 +303,7 @@ class ProductController extends Controller
 
     public function remainingUploads()
     {
-
-        $remaining_uploads = (max(0, auth()->user()->shop->product_upload_limit - auth()->user()->products()->count()));
+        $remaining_uploads = (max(0, auth()->user()->shop->product_upload_limit - auth()->user()->products->count()));
         return response()->json([
             'ramaining_product' => $remaining_uploads,
         ]);

@@ -256,7 +256,7 @@ class SellerController extends Controller
         $shop->verification_status = $request->status;
         $shop->save();
         Cache::forget('verified_sellers_id');
-        
+
         $status = $request->status == 1 ? 'approved' : 'rejected';
         $users = User::findMany([$shop->user->id, User::where('user_type', 'admin')->first()->id]);
         Notification::send($users, new ShopVerificationNotification($shop, $status));
@@ -278,12 +278,16 @@ class SellerController extends Controller
 
         if ($shop->user->banned == 1) {
             $shop->user->banned = 0;
+            if ($shop->verification_info) {
+                $shop->verification_status = 1;
+            }
             flash(translate('Seller has been unbanned successfully'))->success();
         } else {
             $shop->user->banned = 1;
+            $shop->verification_status = 0;
             flash(translate('Seller has been banned successfully'))->success();
         }
-
+        $shop->save();
         $shop->user->save();
         return back();
     }

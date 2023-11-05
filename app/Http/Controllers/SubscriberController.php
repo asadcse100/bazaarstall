@@ -7,7 +7,8 @@ use App\Models\Subscriber;
 
 class SubscriberController extends Controller
 {
-    public function __construct() {
+    public function __construct()
+    {
         // Staff Permission Check
         $this->middleware(['permission:view_all_subscribers'])->only('index');
         $this->middleware(['permission:delete_subscriber'])->only('destroy');
@@ -43,13 +44,12 @@ class SubscriberController extends Controller
     public function store(Request $request)
     {
         $subscriber = Subscriber::where('email', $request->email)->first();
-        if($subscriber == null){
+        if ($subscriber == null) {
             $subscriber = new Subscriber;
             $subscriber->email = $request->email;
             $subscriber->save();
             flash(translate('You have subscribed successfully'))->success();
-        }
-        else{
+        } else {
             flash(translate('You are  already a subscriber'))->success();
         }
         return back();

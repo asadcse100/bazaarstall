@@ -52,6 +52,7 @@ use App\Http\Controllers\AffiliateController;
 use App\Http\Controllers\ClubPointController;
 use App\Http\Controllers\CommissionController;
 use AizPackages\ColorCodeConverter\Services\ColorCodeConverter;
+use App\Models\FlashDealProduct;
 
 //sensSMS function for OTP
 if (!function_exists('sendSMS')) {
@@ -129,7 +130,13 @@ if (!function_exists('filter_products')) {
             $products = $products->where('wholesale_product', 0);
         }
         $verified_sellers = verified_sellers_id();
+        // $unbanned_sellers_id = unbanned_sellers_id();
         if (get_setting('vendor_system_activation') == 1) {
+            // return $products->where(function ($p) use ($verified_sellers, $unbanned_sellers_id) {
+            //     $p->where('added_by', 'admin')->orWhere(function ($q) use ($verified_sellers, $unbanned_sellers_id) {
+            //         $q->whereIn('user_id', $verified_sellers)->whereIn('user_id', $unbanned_sellers_id);
+            //     });
+            // });
             return $products->where(function ($p) use ($verified_sellers) {
                 $p->where('added_by', 'admin')->orWhere(function ($q) use ($verified_sellers) {
                     $q->whereIn('user_id', $verified_sellers);
@@ -146,9 +153,7 @@ if (!function_exists('get_cached_products')) {
     function get_cached_products($category_id = null)
     {
         return Cache::remember('products-category-' . $category_id, 86400, function () use ($category_id) {
-            $category_ids = CategoryUtility::children_ids($category_id);
-            $category_ids[] = $category_id;
-            return filter_products(Product::whereIn('category_id', $category_ids))->latest()->take(5)->get();
+            return filter_products(Product::where('category_id', $category_id))->latest()->take(5)->get();
         });
     }
 }
@@ -157,10 +162,19 @@ if (!function_exists('verified_sellers_id')) {
     function verified_sellers_id()
     {
         return Cache::rememberForever('verified_sellers_id', function () {
-            return App\Models\Shop::where('verification_status', 1)->pluck('user_id')->toArray();
+            return Shop::where('verification_status', 1)->pluck('user_id')->toArray();
         });
     }
 }
+
+// if (!function_exists('unbanned_sellers_id')) {
+//     function unbanned_sellers_id()
+//     {
+//         return Cache::rememberForever('unbanned_sellers_id', function () {
+//             return App\Models\User::where('user_type', 'seller')->where('banned', 0)->pluck('id')->toArray();
+//         });
+//     }
+// }
 
 if (!function_exists('get_system_default_currency')) {
     function get_system_default_currency()
@@ -1173,7 +1187,8 @@ if (!function_exists('my_asset')) {
     {
         if (env('FILESYSTEM_DRIVER') != 'local') {
             return Storage::disk(env('FILESYSTEM_DRIVER'))->url($path);
-        }
+        } 
+        
         return app('url')->asset('/' . $path, $secure);
     }
 }
@@ -1523,16 +1538,37 @@ if (!function_exists('get_admin')) {
     }
 }
 
+// Get slider images
+if (!function_exists('get_slider_images')) {
+    function get_slider_images($ids)
+    {
+        $slider_query = Upload::query();
+        $sliders = $slider_query->whereIn('id', $ids)->get();
+        return $sliders;
+    }
+}
+
 if (!function_exists('get_featured_flash_deal')) {
     function get_featured_flash_deal()
     {
-        $featured_flash_deal_query = FlashDeal::query();
-        $featured_flash_deal = $featured_flash_deal_query->isActiveAndFeatured()
+        $flash_deal_query = FlashDeal::query();
+        $featured_flash_deal = $flash_deal_query->isActiveAndFeatured()
             ->where('start_date', '<=', strtotime(date('Y-m-d H:i:s')))
             ->where('end_date', '>=', strtotime(date('Y-m-d H:i:s')))
             ->first();
-
+            
         return $featured_flash_deal;
+    }
+}
+
+if (!function_exists('get_flash_deal_products')) {
+    function get_flash_deal_products($flash_deal_id)
+    {
+        $flash_deal_product_query = FlashDealProduct::query();
+        $flash_deal_product_query->where('flash_deal_id', $flash_deal_id);
+        $flash_deal_products = $flash_deal_product_query->with('product')->limit(10)->get();
+        
+        return $flash_deal_products;
     }
 }
 
@@ -1761,7 +1797,7 @@ if (!function_exists('get_similiar_classified_products')) {
 if (!function_exists('get_home_page_classified_products')) {
     function get_home_page_classified_products($limit = '')
     {
-        $classified_product_query = CustomerProduct::query();
+        $classified_product_query = CustomerProduct::query()->with('user', 'thumbnail');
         $classified_product_query->isActiveAndApproval();
         if ($limit) {
             $classified_product_query->take($limit);
@@ -1790,6 +1826,17 @@ if (!function_exists('get_all_brands')) {
 }
 
 // Get single brands
+if (!function_exists('get_brands')) {
+    function get_brands($brand_ids)
+    {
+        $brand_query = Brand::query();
+        $brand_query->with('brandLogo');
+        $brands = $brand_query->whereIn('id', $brand_ids)->get();
+        return $brands;
+    }
+}
+
+// Get single brands
 if (!function_exists('get_single_brand')) {
     function get_single_brand($brand_id)
     {
@@ -1810,6 +1857,20 @@ if (!function_exists('get_brands_by_products')) {
     }
 }
 
+// Get category
+if (!function_exists('get_category')) {
+    function get_category($category_ids)
+    {
+        $category_query = Category::query();
+        $category_query->with('coverImage');
+        
+        $category_query->whereIn('id', $category_ids);
+        
+        $categories = $category_query->get();
+        return $categories;
+    }
+}
+
 // Get single category
 if (!function_exists('get_single_category')) {
     function get_single_category($category_id)
@@ -1823,7 +1884,7 @@ if (!function_exists('get_single_category')) {
 if (!function_exists('get_level_zero_categories')) {
     function get_level_zero_categories()
     {
-        $categories_query = Category::query();
+        $categories_query = Category::query()->with(['coverImage', 'catIcon']);
         return $categories_query->where('level', 0)->orderBy('order_level', 'desc')->get();
     }
 }
@@ -1862,7 +1923,7 @@ if (!function_exists('get_single_attribute_name')) {
 if (!function_exists('get_user_cart')) {
     function get_user_cart()
     {
-        $cart = null;
+        $cart = [];
         if (auth()->user() != null) {
             $cart = Cart::where('user_id', Auth::user()->id)->get();
         } else {

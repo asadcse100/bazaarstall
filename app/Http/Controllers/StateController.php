@@ -8,9 +8,10 @@ use App\Models\Country;
 
 class StateController extends Controller
 {
-    public function __construct() {
+    public function __construct()
+    {
         // Staff Permission Check
-        $this->middleware(['permission:manage_shipping_states'])->only('index','edit');
+        $this->middleware(['permission:manage_shipping_states'])->only('index', 'edit');
     }
 
     /**

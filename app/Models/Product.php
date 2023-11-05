@@ -24,9 +24,14 @@ class Product extends Model
         return $this->hasMany(ProductTranslation::class);
     }
 
-    public function category()
+    public function main_category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+    
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'product_categories');
     }
 
     public function brand()
@@ -47,6 +52,11 @@ class Product extends Model
     public function reviews()
     {
         return $this->hasMany(Review::class)->where('status', 1);
+    }
+
+    public function product_queries()
+    {
+        return $this->hasMany(ProductQuery::class);
     }
 
     public function wishlists()

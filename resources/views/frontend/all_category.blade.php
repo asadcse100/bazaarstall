@@ -6,7 +6,9 @@
         <div class="container text-center">
             <div class="row">
                 <div class="col-lg-6 text-center text-lg-left">
-                    <h1 class="fw-700 fs-20 fs-md-24 text-dark">{{ translate('All Categories') }}</h1>
+                    <h1 class="fw-700 fs-20 fs-md-24 text-dark">
+                        {{ translate('All Categories') }}
+                    </h1>
                 </div>
                 <div class="col-lg-6">
                     <ul class="breadcrumb bg-transparent p-0 justify-content-center justify-content-lg-end">
@@ -32,44 +34,44 @@
                             <img src="{{ uploaded_asset($category->banner) }}" alt="" class="img-fit h-100">
                         </div>
                         <a href="{{ route('products.category', $category->slug) }}"
-                            class="text-reset fs-16 fs-md-20 fw-700 hov-text-primary">{{ $category->getTranslation('name') }}</a>
+                            class="text-reset fs-16 fs-md-20 fw-700 hov-text-primary">
+                            {{ $category->getTranslation('name') }}
+                        </a>
                     </div>
                     <div class="px-4 py-2">
                         <div class="row row-cols-xl-5 row-cols-md-3 row-cols-sm-2 row-cols-1 gutters-16">
-                            @foreach (\App\Utility\CategoryUtility::get_immediate_children_ids($category->id) as $key => $first_level_id)
+                            @foreach ($category->childrenCategories as $key => $child_category)
                                 <div class="col text-left mb-3">
                                     <!-- Sub Category Name -->
                                     <h6 class="text-dark mb-3">
                                         <a class="text-reset fw-700 fs-14 hov-text-primary"
-                                            href="{{ route('products.category', get_single_category($first_level_id)->slug) }}">
-                                            {{ get_single_category($first_level_id)->getTranslation('name') }}
+                                            href="{{ route('products.category', $child_category->slug) }}">
+                                            {{ $child_category->getTranslation('name') }}
                                         </a>
                                     </h6>
+
                                     <!-- Sub-sub Categories -->
-                                    @php
-                                        $first_level_categories = \App\Utility\CategoryUtility::get_immediate_children_ids($first_level_id);
-                                    @endphp
                                     <ul
-                                        class="mb-2 list-unstyled has-transition mh-100 @if (count($first_level_categories) > 5) less @endif">
-                                        @foreach ($first_level_categories as $key => $second_level_id)
+                                        class="mb-2 list-unstyled has-transition mh-100 @if ($child_category->childrenCategories->count() > 5) less @endif">
+                                        @foreach ($child_category->childrenCategories as $key => $second_level_category)
                                             <li class="text-dark mb-2">
                                                 <a class="text-reset fw-400 fs-14 hov-text-primary animate-underline-primary"
-                                                    href="{{ route('products.category', get_single_category($second_level_id)->slug) }}">
-                                                    {{ get_single_category($second_level_id)->getTranslation('name') }}
+                                                    href="{{ route('products.category', $second_level_category->slug) }}">
+                                                    {{ $second_level_category->getTranslation('name') }}
                                                 </a>
                                             </li>
                                         @endforeach
                                     </ul>
-                                    @if (count($first_level_categories) > 5)
+                                    @if ($child_category->childrenCategories->count() > 5)
                                         <a href="javascript:void(1)"
                                             class="show-hide-cetegoty text-primary hov-text-primary fs-12 fw-700">{{ translate('More') }}
                                             <i class="las la-angle-down"></i></a>
                                     @endif
-
                                 </div>
                             @endforeach
                         </div>
                     </div>
+
                 </div>
             @endforeach
         </div>

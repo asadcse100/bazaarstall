@@ -2,9 +2,9 @@
 @if (get_setting('footer_title') != null || get_setting('footer_description') != null)
     <section class="bg-light border-top border-bottom mt-auto">
         <div class="container py-4">
-            <h1 class="fs-18 fw-700 text-gray-dark mb-3">{{ get_setting('footer_title',null, get_system_language()->code) }}</h1>
+            <h1 class="fs-18 fw-700 text-gray-dark mb-3">{{ get_setting('footer_title',null, $system_language->code) }}</h1>
             <p class="fs-13 text-gray-dark text-justify mb-0">
-                {!! nl2br(get_setting('footer_description',null, get_system_language()->code)) !!}
+                {!! nl2br(get_setting('footer_description',null, $system_language->code)) !!}
             </p>
         </div>
     </section>
@@ -555,13 +555,9 @@
                 <span class="d-block mt-1 fs-10 fw-600 text-reset {{ areActiveRoutes(['categories.all'],'text-primary')}}">{{ translate('Categories') }}</span>
             </a>
         </div>
-        @php
-            $cart = get_user_cart();
-        @endphp
-
         <!-- Cart -->
         @php
-            $count = (isset($cart) && count($cart)) ? count($cart) : 0;
+            $count = count(get_user_cart());
         @endphp
         <div class="col-auto">
             <a href="{{ route('cart') }}" class="text-secondary d-block text-center pb-2 pt-3 px-3 {{ areActiveRoutes(['cart'],'svg-active')}}">
@@ -610,8 +606,8 @@
                 @if(isAdmin())
                     <a href="{{ route('admin.dashboard') }}" class="text-secondary d-block text-center pb-2 pt-3">
                         <span class="d-block mx-auto">
-                            @if(Auth::user()->photo != null)
-                                <img src="{{ custom_asset(Auth::user()->avatar_original)}}" alt="{{ translate('avatar') }}" class="rounded-circle size-20px">
+                            @if($user->avatar_original != null)
+                                <img src="{{ $user_avatar }}" alt="{{ translate('avatar') }}" class="rounded-circle size-20px">
                             @else
                                 <img src="{{ static_asset('assets/img/avatar-place.png') }}" alt="{{ translate('avatar') }}" class="rounded-circle size-20px">
                             @endif
@@ -621,8 +617,8 @@
                 @elseif(isSeller())
                     <a href="{{ route('dashboard') }}" class="text-secondary d-block text-center pb-2 pt-3">
                         <span class="d-block mx-auto">
-                            @if(Auth::user()->photo != null)
-                                <img src="{{ custom_asset(Auth::user()->avatar_original)}}" alt="{{ translate('avatar') }}" class="rounded-circle size-20px">
+                            @if($user->avatar_original != null)
+                                <img src="{{ $user_avatar }}" alt="{{ translate('avatar') }}" class="rounded-circle size-20px">
                             @else
                                 <img src="{{ static_asset('assets/img/avatar-place.png') }}" alt="{{ translate('avatar') }}" class="rounded-circle size-20px">
                             @endif
@@ -632,8 +628,8 @@
                 @else
                     <a href="javascript:void(0)" class="text-secondary d-block text-center pb-2 pt-3 mobile-side-nav-thumb" data-toggle="class-toggle" data-backdrop="static" data-target=".aiz-mobile-side-nav">
                         <span class="d-block mx-auto">
-                            @if(Auth::user()->photo != null)
-                                <img src="{{ custom_asset(Auth::user()->avatar_original)}}" alt="{{ translate('avatar') }}" class="rounded-circle size-20px">
+                            @if($user->avatar_original != null)
+                                <img src="{{ $user_avatar }}" alt="{{ translate('avatar') }}" class="rounded-circle size-20px">
                             @else
                                 <img src="{{ static_asset('assets/img/avatar-place.png') }}" alt="{{ translate('avatar') }}" class="rounded-circle size-20px">
                             @endif

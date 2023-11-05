@@ -26,6 +26,8 @@ class SearchController extends Controller
         $selected_attribute_values = array();
         $colors = Color::all();
         $selected_color = null;
+        $category = [];
+        $categories = [];
 
         $conditions = [];
 
@@ -45,12 +47,14 @@ class SearchController extends Controller
         if ($category_id != null) {
             $category_ids = CategoryUtility::children_ids($category_id);
             $category_ids[] = $category_id;
+            $category = Category::with('childrenCategories')->find($category_id);
 
-            $products->whereIn('category_id', $category_ids);
+            $products = $category->products();
 
             $attribute_ids = AttributeCategory::whereIn('category_id', $category_ids)->pluck('attribute_id')->toArray();
             $attributes = Attribute::whereIn('id', $attribute_ids)->get();
         } else {
+            $categories = Category::with('childrenCategories', 'coverImage')->where('level', 0)->orderBy('order_level', 'desc')->get();
             // if ($query != null) {
             //     foreach (explode(' ', trim($query)) as $word) {
             //         $ids = Category::where('name', 'like', '%'.$word.'%')->pluck('id')->toArray();
@@ -134,7 +138,7 @@ class SearchController extends Controller
 
         $products = filter_products($products)->with('taxes')->paginate(24)->appends(request()->query());
 
-        return view('frontend.product_listing', compact('products', 'query', 'category_id', 'brand_id', 'sort_by', 'seller_id', 'min_price', 'max_price', 'attributes', 'selected_attribute_values', 'colors', 'selected_color'));
+        return view('frontend.product_listing', compact('products', 'query', 'category', 'categories', 'category_id', 'brand_id', 'sort_by', 'seller_id', 'min_price', 'max_price', 'attributes', 'selected_attribute_values', 'colors', 'selected_color'));
     }
 
     public function listing(Request $request)

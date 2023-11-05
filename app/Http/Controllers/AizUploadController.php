@@ -125,7 +125,7 @@ class AizUploadController extends Controller
                     }
                 }
 
-                if($extension == 'svg') {
+                if ($extension == 'svg') {
                     $sanitizer = new Sanitizer();
                     // Load the dirty svg
                     $dirtySVG = file_get_contents($request->file('aiz_file'));
@@ -145,7 +145,7 @@ class AizUploadController extends Controller
 
                 // Get the MIME type of the file
                 $file_mime = finfo_file($finfo, base_path('public/') . $path);
-                
+
 
                 if ($type[$extension] == 'image' && get_setting('disable_image_optimization') != 1) {
                     try {
@@ -170,7 +170,7 @@ class AizUploadController extends Controller
                 }
 
                 if (env('FILESYSTEM_DRIVER') != 'local') {
-                    
+
                     Storage::disk(env('FILESYSTEM_DRIVER'))->put(
                         $path,
                         file_get_contents(base_path('public/') . $path),

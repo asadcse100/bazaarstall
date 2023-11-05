@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductRequest;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\ProductTax;
 use App\Models\ProductTranslation;
 use App\Models\Upload;
+use App\Services\ProductTaxService;
 use Artisan;
 
 use App\Services\ProductService;
 use App\Services\ProductStockService;
-use App\Services\ProductTaxService;
 
 class DigitalProductController extends Controller
 {
@@ -65,7 +66,7 @@ class DigitalProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
         // Product Store
         $product = (new ProductService)->store($request->except([
@@ -73,6 +74,9 @@ class DigitalProductController extends Controller
         ]));
 
         $request->merge(['product_id' => $product->id, 'current_stock' => 0]);
+
+        //Product categories
+        $product->categories()->attach($request->category_ids);
 
         //Product Stock
         (new ProductStockService)->store($request->only([
@@ -134,7 +138,7 @@ class DigitalProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ProductRequest $request, $id)
     {
         $product                    = Product::findOrFail($id);
 
@@ -149,6 +153,9 @@ class DigitalProductController extends Controller
         }
 
         $request->merge(['product_id' => $product->id,'current_stock' => 0]);
+
+        //Product categories
+        $product->categories()->sync($request->category_ids);
 
         (new ProductStockService)->store($request->only([
             'unit_price', 'current_stock', 'product_id'
@@ -183,15 +190,12 @@ class DigitalProductController extends Controller
      */
     public function destroy($id)
     {
-        $product_destroy = (new ProductService)->destroy($id);
+       (new ProductService)->destroy($id);
+
+        flash(translate('Product has been deleted successfully'))->success();
+        Artisan::call('view:clear');
+        Artisan::call('cache:clear');
         
-        if ($product_destroy) {
-            flash(translate('Product has been deleted successfully'))->success();
-            Artisan::call('view:clear');
-            Artisan::call('cache:clear');
-        } else {
-            flash(translate('Something went wrong'))->error();
-        }
         return back();
     }
 

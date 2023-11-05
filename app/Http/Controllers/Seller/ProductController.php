@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Notification;
 class ProductController extends Controller
 {
     protected $productService;
+    protected $productCategoryService;
     protected $productTaxService;
     protected $productFlashDealService;
     protected $productStockService;
@@ -86,6 +87,9 @@ class ProductController extends Controller
         ]));
         $request->merge(['product_id' => $product->id]);
 
+        ///Product categories
+        $product->categories()->attach($request->category_ids);
+
         //VAT & Tax
         if ($request->tax_id) {
             $this->productTaxService->store($request->only([
@@ -104,7 +108,7 @@ class ProductController extends Controller
             'lang', 'name', 'unit', 'description', 'product_id'
         ]));
 
-        if(get_setting('product_approve_by_admin') == 1){
+        if (get_setting('product_approve_by_admin') == 1) {
             $users = User::findMany([auth()->user()->id, User::where('user_type', 'admin')->first()->id]);
             Notification::send($users, new ShopProductNotification('physical', $product));
         }
@@ -142,18 +146,20 @@ class ProductController extends Controller
             '_token', 'sku', 'choice', 'tax_id', 'tax', 'tax_type', 'flash_deal_id', 'flash_discount', 'flash_discount_type'
         ]), $product);
 
-        //Product Stock
-        foreach ($product->stocks as $key => $stock) {
-            $stock->delete();
-        }
         $request->merge(['product_id' => $product->id]);
+
+        //Product categories
+        $product->categories()->sync($request->category_ids);
+
+        //Product Stock
+        $product->stocks()->delete();
         $this->productStockService->store($request->only([
             'colors_active', 'colors', 'choice_no', 'unit_price', 'sku', 'current_stock', 'product_id'
         ]), $product);
 
         //VAT & Tax
         if ($request->tax_id) {
-            ProductTax::where('product_id', $product->id)->delete();
+            $product->taxes()->delete();
             $request->merge(['product_id' => $product->id]);
             $this->productTaxService->store($request->only([
                 'tax_id', 'tax', 'tax_type', 'product_id'
@@ -284,7 +290,7 @@ class ProductController extends Controller
             flash(translate('This product is not yours.'))->warning();
             return back();
         }
-        
+
         if (addon_is_activated('seller_subscription')) {
             if (!seller_package_validity_check()) {
                 flash(translate('Please upgrade your package.'))->warning();
@@ -315,6 +321,7 @@ class ProductController extends Controller
         }
 
         $product->product_translations()->delete();
+        $product->categories()->detach();
         $product->stocks()->delete();
         $product->taxes()->delete();
 

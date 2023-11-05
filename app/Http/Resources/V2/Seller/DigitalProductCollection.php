@@ -20,7 +20,7 @@ class DigitalProductCollection extends ResourceCollection
                     'id' => $data->id,
                     'name' => $data->getTranslation('name'),
                     'thumbnail_img' => uploaded_asset($data->thumbnail_img),
-                    'category' => $data->category->getTranslation('name'),
+                    'category' => $data->main_category ? $data->main_category->getTranslation('name') : "",
                     'price	' => $data->unit_price,
                     'status' => $data->published == 0 ? false : true,
                     'featured' => $data->seller_featured == 0 ? false : true

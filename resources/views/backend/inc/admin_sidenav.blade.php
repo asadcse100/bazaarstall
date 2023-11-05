@@ -211,13 +211,15 @@
                                         </a>
                                     </li>
                                 @endcan
-                                @can('view_seller_auction_products')
-                                    <li class="aiz-side-nav-item">
-                                        <a href="{{route('auction.seller_products')}}" class="aiz-side-nav-link">
-                                            <span class="aiz-side-nav-text">{{ translate('Seller Auction Products') }}</span>
-                                        </a>
-                                    </li>
-                                @endcan
+                                @if (get_setting('vendor_system_activation') == 1)
+                                    @can('view_seller_auction_products')
+                                        <li class="aiz-side-nav-item">
+                                            <a href="{{route('auction.seller_products')}}" class="aiz-side-nav-link">
+                                                <span class="aiz-side-nav-text">{{ translate('Seller Auction Products') }}</span>
+                                            </a>
+                                        </li>
+                                    @endcan
+                                @endif
                                 @can('view_auction_product_orders')
                                     <li class="aiz-side-nav-item">
                                         <a href="{{route('auction_products_orders')}}" class="aiz-side-nav-link {{ areActiveRoutes(['auction_products_orders.index']) }}">
@@ -231,11 +233,15 @@
                 @endif
 
                 <!-- Wholesale Product -->
-
+                @if(addon_is_activated('wholesale'))
+                    @canany(['add_wholesale_product','view_all_wholesale_products','view_inhouse_wholesale_products','view_sellers_wholesale_products'])
                         <li class="aiz-side-nav-item">
                             <a href="#" class="aiz-side-nav-link">
                                 <i class="las la-luggage-cart aiz-side-nav-icon"></i>
                                 <span class="aiz-side-nav-text">{{translate('Wholesale Products')}}</span>
+                                @if (env("DEMO_MODE") == "On")
+                                    <span class="badge badge-inline badge-danger">Addon</span>
+                                @endif
                                 <span class="aiz-side-nav-arrow"></span>
                             </a>
                             <ul class="aiz-side-nav-list level-2">
@@ -260,16 +266,19 @@
                                         </a>
                                     </li>
                                 @endcan
-                                @can('view_sellers_wholesale_products')
-                                    <li class="aiz-side-nav-item">
-                                        <a href="{{route('wholesale_products.seller')}}" class="aiz-side-nav-link {{ areActiveRoutes(['wholesale_product_edit.admin']) }}">
-                                            <span class="aiz-side-nav-text">{{ translate('Seller Wholesale Products') }}</span>
-                                        </a>
-                                    </li>
-                                @endcan
+                                @if (get_setting('vendor_system_activation') == 1)
+                                    @can('view_sellers_wholesale_products')
+                                        <li class="aiz-side-nav-item">
+                                            <a href="{{route('wholesale_products.seller')}}" class="aiz-side-nav-link {{ areActiveRoutes(['wholesale_product_edit.admin']) }}">
+                                                <span class="aiz-side-nav-text">{{ translate('Seller Wholesale Products') }}</span>
+                                            </a>
+                                        </li>
+                                    @endcan
+                                @endif
                             </ul>
                         </li>
-
+                    @endcanany
+                @endif
 
                 <!-- Sale -->
                 @canany(['view_all_orders', 'view_inhouse_orders','view_seller_orders','view_pickup_point_orders'])
@@ -295,14 +304,15 @@
                                     </a>
                                 </li>
                             @endcan
-
-                            @can('view_seller_orders')
-                                <li class="aiz-side-nav-item">
-                                    <a href="{{ route('seller_orders.index') }}" class="aiz-side-nav-link {{ areActiveRoutes(['seller_orders.index', 'seller_orders.show'])}}">
-                                        <span class="aiz-side-nav-text">{{translate('Seller Orders')}}</span>
-                                    </a>
-                                </li>
-                            @endcan
+                            @if (get_setting('vendor_system_activation') == 1)
+                                @can('view_seller_orders')
+                                    <li class="aiz-side-nav-item">
+                                        <a href="{{ route('seller_orders.index') }}" class="aiz-side-nav-link {{ areActiveRoutes(['seller_orders.index', 'seller_orders.show'])}}">
+                                            <span class="aiz-side-nav-text">{{translate('Seller Orders')}}</span>
+                                        </a>
+                                    </li>
+                                @endcan
+                            @endif
                             
                             @can('view_pickup_point_orders')
                                 <li class="aiz-side-nav-item">
@@ -458,68 +468,70 @@
                 @endcanany
 
                 <!-- Sellers -->
-                @canany(['view_all_seller','seller_payment_history','view_seller_payout_requests','seller_commission_configuration','view_all_seller_packages','seller_verification_form_configuration'])
-                    <li class="aiz-side-nav-item">
-                        <a href="#" class="aiz-side-nav-link">
-                            <i class="las la-user aiz-side-nav-icon"></i>
-                            <span class="aiz-side-nav-text">{{ translate('Sellers') }}</span>
-                            <span class="aiz-side-nav-arrow"></span>
-                        </a>
-                        <ul class="aiz-side-nav-list level-2">
-                            @can('view_all_seller')
-                                <li class="aiz-side-nav-item">
-                                    @php
-                                        $sellers = \App\Models\Shop::where('verification_status', 0)->where('verification_info', '!=', null)->count();
-                                    @endphp
-                                    <a href="{{ route('sellers.index') }}" class="aiz-side-nav-link {{ areActiveRoutes(['sellers.index', 'sellers.create', 'sellers.edit', 'sellers.payment_history','sellers.approved','sellers.profile_modal','sellers.show_verification_request'])}}">
-                                        <span class="aiz-side-nav-text">{{ translate('All Seller') }}</span>
-                                        @if($sellers > 0)<span class="badge badge-info">{{ $sellers }}</span> @endif
-                                    </a>
-                                </li>
-                            @endcan
-                            @can('seller_payment_history')
-                                <li class="aiz-side-nav-item">
-                                    <a href="{{ route('sellers.payment_histories') }}" class="aiz-side-nav-link">
-                                        <span class="aiz-side-nav-text">{{ translate('Payouts') }}</span>
-                                    </a>
-                                </li>
-                            @endcan
-                            @can('view_seller_payout_requests')
-                                <li class="aiz-side-nav-item">
-                                    <a href="{{ route('withdraw_requests_all') }}" class="aiz-side-nav-link">
-                                        <span class="aiz-side-nav-text">{{ translate('Payout Requests') }}</span>
-                                    </a>
-                                </li>
-                            @endcan
-                            @can('seller_commission_configuration')
-                                <li class="aiz-side-nav-item">
-                                    <a href="{{ route('business_settings.vendor_commission') }}" class="aiz-side-nav-link">
-                                        <span class="aiz-side-nav-text">{{ translate('Seller Commission') }}</span>
-                                    </a>
-                                </li>
-                            @endcan
-                            @if (addon_is_activated('seller_subscription'))
-                                @can('view_all_seller_packages')
+                @if (get_setting('vendor_system_activation') == 1)
+                    @canany(['view_all_seller','seller_payment_history','view_seller_payout_requests','seller_commission_configuration','view_all_seller_packages','seller_verification_form_configuration'])
+                        <li class="aiz-side-nav-item">
+                            <a href="#" class="aiz-side-nav-link">
+                                <i class="las la-user aiz-side-nav-icon"></i>
+                                <span class="aiz-side-nav-text">{{ translate('Sellers') }}</span>
+                                <span class="aiz-side-nav-arrow"></span>
+                            </a>
+                            <ul class="aiz-side-nav-list level-2">
+                                @can('view_all_seller')
                                     <li class="aiz-side-nav-item">
-                                        <a href="{{ route('seller_packages.index') }}" class="aiz-side-nav-link {{ areActiveRoutes(['seller_packages.index', 'seller_packages.create', 'seller_packages.edit'])}}">
-                                            <span class="aiz-side-nav-text">{{ translate('Seller Packages') }}</span>
-                                            @if (env("DEMO_MODE") == "On")
-                                                <span class="badge badge-inline badge-danger">Addon</span>
-                                            @endif
+                                        @php
+                                            $sellers = \App\Models\Shop::where('verification_status', 0)->where('verification_info', '!=', null)->count();
+                                        @endphp
+                                        <a href="{{ route('sellers.index') }}" class="aiz-side-nav-link {{ areActiveRoutes(['sellers.index', 'sellers.create', 'sellers.edit', 'sellers.payment_history','sellers.approved','sellers.profile_modal','sellers.show_verification_request'])}}">
+                                            <span class="aiz-side-nav-text">{{ translate('All Seller') }}</span>
+                                            @if($sellers > 0)<span class="badge badge-info">{{ $sellers }}</span> @endif
                                         </a>
                                     </li>
                                 @endcan
-                            @endif
-                            @can('seller_verification_form_configuration')
-                                <li class="aiz-side-nav-item">
-                                    <a href="{{ route('seller_verification_form.index') }}" class="aiz-side-nav-link">
-                                        <span class="aiz-side-nav-text">{{ translate('Seller Verification Form') }}</span>
-                                    </a>
-                                </li>
-                            @endcan
-                        </ul>
-                    </li>
-                @endcanany
+                                @can('seller_payment_history')
+                                    <li class="aiz-side-nav-item">
+                                        <a href="{{ route('sellers.payment_histories') }}" class="aiz-side-nav-link">
+                                            <span class="aiz-side-nav-text">{{ translate('Payouts') }}</span>
+                                        </a>
+                                    </li>
+                                @endcan
+                                @can('view_seller_payout_requests')
+                                    <li class="aiz-side-nav-item">
+                                        <a href="{{ route('withdraw_requests_all') }}" class="aiz-side-nav-link">
+                                            <span class="aiz-side-nav-text">{{ translate('Payout Requests') }}</span>
+                                        </a>
+                                    </li>
+                                @endcan
+                                @can('seller_commission_configuration')
+                                    <li class="aiz-side-nav-item">
+                                        <a href="{{ route('business_settings.vendor_commission') }}" class="aiz-side-nav-link">
+                                            <span class="aiz-side-nav-text">{{ translate('Seller Commission') }}</span>
+                                        </a>
+                                    </li>
+                                @endcan
+                                @if (addon_is_activated('seller_subscription'))
+                                    @can('view_all_seller_packages')
+                                        <li class="aiz-side-nav-item">
+                                            <a href="{{ route('seller_packages.index') }}" class="aiz-side-nav-link {{ areActiveRoutes(['seller_packages.index', 'seller_packages.create', 'seller_packages.edit'])}}">
+                                                <span class="aiz-side-nav-text">{{ translate('Seller Packages') }}</span>
+                                                @if (env("DEMO_MODE") == "On")
+                                                    <span class="badge badge-inline badge-danger">Addon</span>
+                                                @endif
+                                            </a>
+                                        </li>
+                                    @endcan
+                                @endif
+                                @can('seller_verification_form_configuration')
+                                    <li class="aiz-side-nav-item">
+                                        <a href="{{ route('seller_verification_form.index') }}" class="aiz-side-nav-link">
+                                            <span class="aiz-side-nav-text">{{ translate('Seller Verification Form') }}</span>
+                                        </a>
+                                    </li>
+                                @endcan
+                            </ul>
+                        </li>
+                    @endcanany
+                @endif
 
                 {{-- Uploads Files --}}
                 <li class="aiz-side-nav-item">

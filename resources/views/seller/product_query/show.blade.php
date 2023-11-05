@@ -38,12 +38,12 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <textarea class="form-control" rows="4" name="reply" placeholder="{{ translate('Type your reply') }}"
-                                    required></textarea>
+                                    required>{{ $query->reply }}</textarea>
                             </div>
                         </div>
                         <br>
                         <div class="text-right">
-                            <button type="submit" class="btn btn-info">{{ translate('Send') }}</button>
+                            <button type="submit" class="btn btn-info">{{  $query->reply == null ? translate('Send') : translate('Update') }}</button>
                         </div>
                     </form>
                 @endif

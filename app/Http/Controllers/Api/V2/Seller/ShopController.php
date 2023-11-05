@@ -226,6 +226,7 @@ class ShopController extends Controller
         $user->email = $request->email;
         $user->user_type = "seller";
         $user->password = Hash::make($request->password);
+        $user->verification_code = rand(100000, 999999);
 
         if ($user->save()) {
             $shop = new Shop;

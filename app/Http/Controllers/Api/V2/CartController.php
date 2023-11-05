@@ -110,12 +110,12 @@ class CartController extends Controller
                 $grand_total += $sub_total;
                 $shop_data = Shop::where('user_id', $owner_id)->first();
                 if ($shop_data) {
-                    $shop['name'] = $shop_data->name;
+                    $shop['name'] = translate($shop_data->name);
                     $shop['owner_id'] = (int) $owner_id;
                     $shop['sub_total'] = single_price($sub_total);
                     $shop['cart_items'] = $shop_items_data;
                 } else {
-                    $shop['name'] = "Inhouse";
+                    $shop['name'] = translate("Inhouse");
                     $shop['owner_id'] = (int) $owner_id;
                     $shop['sub_total'] = single_price($sub_total);
                     $shop['cart_items'] = $shop_items_data;

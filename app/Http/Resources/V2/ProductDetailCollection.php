@@ -87,6 +87,7 @@ class ProductDetailCollection extends ResourceCollection
                     'rating_count' => (int)Review::where(['product_id' => $data->id])->count(),
                     'earn_point' => (float)$data->earn_point,
                     'description' => $data->getTranslation('description'),
+                    'downloads' => $data->pdf ? uploaded_asset($data->pdf) : null,
                     'video_link' => $data->video_link != null ?  $data->video_link : "",
                     'brand' => $brand,
                     'link' => route('product', $data->slug),

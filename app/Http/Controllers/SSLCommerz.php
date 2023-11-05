@@ -1,10 +1,12 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Models\BusinessSetting;
 use Session;
 
 # IF BROWSE FROM LOCAL HOST, KEEP true
-if(!defined("SSLCZ_IS_LOCAL_HOST")){
+if (!defined("SSLCZ_IS_LOCAL_HOST")) {
     define("SSLCZ_IS_LOCAL_HOST", true);
 }
 
@@ -21,12 +23,11 @@ class SSLCommerz
 
     public function __construct()
     {
-        if(Session::has('payment_type')){
+        if (Session::has('payment_type')) {
             # IF SANDBOX TRUE, THEN IT WILL CONNECT WITH SSLCOMMERZ SANDBOX (TEST) SYSTEM
-            if(BusinessSetting::where('type', 'sslcommerz_sandbox')->first()->value == 1){
+            if (BusinessSetting::where('type', 'sslcommerz_sandbox')->first()->value == 1) {
                 define("SSLCZ_IS_SANDBOX", true);
-            }
-            else{
+            } else {
                 define("SSLCZ_IS_SANDBOX", false);
             }
 
@@ -125,7 +126,6 @@ class SSLCommerz
                                     $options['cards'][10]['name'] = "AMEX";
                                     $options['cards'][10]['link'] = "<a class='hvr-pop' href='" . $this->sslc_data['redirectGatewayURL'] . "city_amex'><img style='width:60px; height:60px' src='" . $this->_get_image("city_amex", $this->sslc_data) . "' alt='city_amex'/></a>";
                                 }
-
                             }
                         } # END OF AMEX
 
@@ -215,13 +215,11 @@ class SSLCommerz
 
                         return $options;
                     }
-
                 } else {
 
                     $this->error = "Invalid Credential!";
                     return $this->error;
                 }
-
             } else {
                 $this->error = "Connectivity Issue. Please contact your sslcommerz manager";
                 return $this->error;
@@ -231,7 +229,6 @@ class SSLCommerz
             $this->error = $msg;
             return false;
         }
-
     }
 
     public function orderValidate($trx_id = '', $amount = 0, $currency = "BDT", $post_data)
@@ -319,14 +316,11 @@ class SSLCommerz
                 curl_setopt($handle, CURLOPT_URL, $requested_url);
                 curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 
-                if (SSLCZ_IS_LOCAL_HOST)
-                {
+                if (SSLCZ_IS_LOCAL_HOST) {
                     curl_setopt($handle, CURLOPT_SSL_VERIFYHOST, false);
                     curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, false);
-                }
-                else
-                {
-                    curl_setopt($handle, CURLOPT_SSL_VERIFYHOST, 2);// Its default value is now 2
+                } else {
+                    curl_setopt($handle, CURLOPT_SSL_VERIFYHOST, 2); // Its default value is now 2
                     curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, true);
                 }
 
@@ -442,7 +436,6 @@ class SSLCommerz
             if (md5($hash_string) == $post_data['verify_sign']) {
 
                 return true;
-
             } else {
                 $this->error = "Verification signature not matched";
                 return false;

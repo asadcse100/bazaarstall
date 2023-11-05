@@ -65,6 +65,7 @@ Route::controller(DemoController::class)->group(function () {
     Route::get('/convert_assets', 'convert_assets');
     Route::get('/convert_category', 'convert_category');
     Route::get('/convert_tax', 'convertTaxes');
+    Route::get('/set-category', 'setCategoryToProductCategory');
     Route::get('/insert_product_variant_forcefully', 'insert_product_variant_forcefully');
     Route::get('/update_seller_id_in_orders/{id_min}/{id_max}', 'update_seller_id_in_orders');
     Route::get('/migrate_attribute_values', 'migrate_attribute_values');
@@ -366,6 +367,7 @@ Route::get('/paystack/new-callback', [PaystackController::class, 'paystackNewCal
 Route::controller(VoguepayController::class)->group(function () {
     Route::get('/vogue-pay', 'showForm');
     Route::get('/vogue-pay/success/{id}', 'paymentSuccess');
+    Route::get('/vogue-pay/callback', 'handleCallback');
     Route::get('/vogue-pay/failure/{id}', 'paymentFailure');
 });
 

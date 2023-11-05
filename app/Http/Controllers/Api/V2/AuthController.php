@@ -141,32 +141,55 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        /*$request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-            'remember_me' => 'boolean'
-        ]);*/
+        $messages = array(
+            'email.required' => $request->login_by == 'email' ? translate('Email is required') : translate('Phone is required'),
+            'email.email' => translate('Email must be a valid email address'),
+            'email.numeric' => translate('Phone must be a number.'),
+            'password.required' => translate('Password is required'),
+        );
+        $validator = Validator::make($request->all(), [
+            'password' => 'required',
+            'login_by' => 'required',
+            'email' => [
+                'required',
+                Rule::when($request->login_by === 'email', ['email', 'required']),
+                Rule::when($request->login_by === 'phone', ['numeric', 'required']),
+            ]
+        ], $messages);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'result' => false,
+                'message' => $validator->errors()->all()
+            ]);
+        }
 
         $delivery_boy_condition = $request->has('user_type') && $request->user_type == 'delivery_boy';
         $seller_condition = $request->has('user_type') && $request->user_type == 'seller';
+        $req_email = $request->email;
 
         if ($delivery_boy_condition) {
             $user = User::whereIn('user_type', ['delivery_boy'])
-                ->where('email', $request->email)
-                ->orWhere('phone', $request->email)
+                ->where(function ($query) use ($req_email) {
+                    $query->where('email', $req_email)
+                        ->orWhere('phone', $req_email);
+                })
                 ->first();
         } elseif ($seller_condition) {
             $user = User::whereIn('user_type', ['seller'])
-                ->where('email', $request->email)
-                ->orWhere('phone', $request->email)
+                ->where(function ($query) use ($req_email) {
+                    $query->where('email', $req_email)
+                        ->orWhere('phone', $req_email);
+                })
                 ->first();
         } else {
             $user = User::whereIn('user_type', ['customer'])
-                ->where('email', $request->email)
-                ->orWhere('phone', $request->email)
+                ->where(function ($query) use ($req_email) {
+                    $query->where('email', $req_email)
+                        ->orWhere('phone', $req_email);
+                })
                 ->first();
         }
-
         // if (!$delivery_boy_condition) {
         if (!$delivery_boy_condition && !$seller_condition) {
             if (\App\Utility\PayhereUtility::create_wallet_reference($request->identity_matrix) == false) {

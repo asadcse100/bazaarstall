@@ -1,13 +1,19 @@
     <!-- Top Bar Banner -->
-    @if (get_setting('topbar_banner') != null)
+    @php
+        $topbar_banner = get_setting('topbar_banner');
+        $topbar_banner_medium = get_setting('topbar_banner_medium');
+        $topbar_banner_small = get_setting('topbar_banner_small');
+        $topbar_banner_asset = uploaded_asset($topbar_banner);
+    @endphp
+    @if ($topbar_banner != null)
         <div class="position-relative top-banner removable-session z-1035 d-none" data-key="top-banner"
             data-value="removed">
             <a href="{{ get_setting('topbar_banner_link') }}" class="d-block text-reset">
-                <img src="{{ uploaded_asset(get_setting('topbar_banner')) }}" class="d-none d-xl-block img-fit" alt="{{ translate('topbar_banner') }}">
+                <img src="{{ $topbar_banner_asset }}" class="d-none d-xl-block img-fit" alt="{{ translate('topbar_banner') }}">
                 <!-- For Large device -->
-                <img src="{{ get_setting('topbar_banner_medium') != null ? uploaded_asset(get_setting('topbar_banner_medium')) : uploaded_asset(get_setting('topbar_banner')) }}"
+                <img src="{{ $topbar_banner_medium != null ? uploaded_asset($topbar_banner_medium) : $topbar_banner_asset }}"
                     class="d-none d-md-block d-xl-none img-fit" alt="{{ translate('topbar_banner') }}"> <!-- For Medium device -->
-                <img src="{{ get_setting('topbar_banner_small') != null ? uploaded_asset(get_setting('topbar_banner_small')) : uploaded_asset(get_setting('topbar_banner')) }}"
+                <img src="{{ $topbar_banner_small != null ? uploaded_asset($topbar_banner_small) : $topbar_banner_asset }}"
                     class="d-md-none img-fit" alt="{{ translate('topbar_banner') }}"> <!-- For Small device -->
             </a>
             <button class="btn text-white h-100 absolute-top-right set-session" data-key="top-banner"
@@ -26,9 +32,7 @@
                         <!-- Language switcher -->
                         @if (get_setting('show_language_switcher') == 'on')
                             <li class="list-inline-item dropdown mr-4" id="lang-change">
-                                @php
-                                    $system_language = get_system_language();
-                                @endphp
+                                
                                 <a href="javascript:void(0)" class="dropdown-toggle text-secondary fs-12 py-2"
                                     data-toggle="dropdown" data-display="static">
                                     <span class="">{{ $system_language->name }}</span>
@@ -53,10 +57,9 @@
                         @if (get_setting('show_currency_switcher') == 'on')
                             <li class="list-inline-item dropdown ml-auto ml-lg-0 mr-0" id="currency-change">
                                 @php
-                                    
                                     $system_currency = get_system_currency();
-                                    
                                 @endphp
+
                                 <a href="javascript:void(0)" class="dropdown-toggle text-secondary fs-12 py-2"
                                     data-toggle="dropdown" data-display="static">
                                     {{ $system_currency->name }}
@@ -232,9 +235,9 @@
                                                     d="M8.333,16A3.34,3.34,0,0,0,11,14.667H5.666A3.34,3.34,0,0,0,8.333,16ZM15.06,9.78a2.457,2.457,0,0,1-.727-1.747V6a6,6,0,1,0-12,0V8.033A2.457,2.457,0,0,1,1.606,9.78,2.083,2.083,0,0,0,3.08,13.333H13.586A2.083,2.083,0,0,0,15.06,9.78Z"
                                                     transform="translate(-0.999)" fill="#91919b" />
                                             </svg>
-                                            @if (Auth::check() && count(Auth::user()->unreadNotifications) > 0)
+                                            @if (Auth::check() && count($user->unreadNotifications) > 0)
                                                 <span
-                                                    class="badge badge-primary badge-inline badge-pill absolute-top-right--10px">{{ count(Auth::user()->unreadNotifications) }}</span>
+                                                    class="badge badge-primary badge-inline badge-pill absolute-top-right--10px">{{ count($user->unreadNotifications) }}</span>
                                             @endif
                                         </span>
                                 </a>
@@ -246,10 +249,10 @@
                                         </div>
                                         <div class="px-3 c-scrollbar-light overflow-auto " style="max-height:300px;">
                                             <ul class="list-group list-group-flush">
-                                                @forelse(Auth::user()->unreadNotifications as $notification)
+                                                @forelse($user->unreadNotifications as $notification)
                                                     <li class="list-group-item">
                                                         @if ($notification->type == 'App\Notifications\OrderNotification')
-                                                            @if (Auth::user()->user_type == 'customer')
+                                                            @if ($user->user_type == 'customer')
                                                                 <a href="{{ route('purchase_history.details', encrypt($notification->data['order_id'])) }}"
                                                                     class="text-secondary fs-12">
                                                                     <span class="ml-2">
@@ -258,7 +261,7 @@
                                                                         {{ translate('has been ' . ucfirst(str_replace('_', ' ', $notification->data['status']))) }}
                                                                     </span>
                                                                 </a>
-                                                            @elseif (Auth::user()->user_type == 'seller')
+                                                            @elseif ($user->user_type == 'seller')
                                                                 <a href="{{ route('seller.orders.show', encrypt($notification->data['order_id'])) }}"
                                                                     class="text-secondary fs-12">
                                                                     <span class="ml-2">
@@ -299,8 +302,8 @@
                                 <!-- Image -->
                                 <span
                                     class="size-40px rounded-circle overflow-hidden border border-transparent nav-user-img">
-                                    @if (Auth::user()->avatar_original != null)
-                                        <img src="{{ uploaded_asset(Auth::user()->avatar_original) }}"
+                                    @if ($user->avatar_original != null)
+                                        <img src="{{ $user_avatar }}"
                                             class="img-fit h-100" alt="{{ translate('avatar') }}"
                                             onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
                                     @else
@@ -309,7 +312,7 @@
                                     @endif
                                 </span>
                                 <!-- Name -->
-                                <h4 class="h5 fs-14 fw-700 text-dark ml-2 mb-0">{{ Auth::user()->name }}</h4>
+                                <h4 class="h5 fs-14 fw-700 text-dark ml-2 mb-0">{{ $user->name }}</h4>
                             </span>
                         @else
                             <!--Login & Registration -->
@@ -604,8 +607,8 @@
                 <span class="d-flex align-items-center nav-user-info pl-4">
                     <!-- Image -->
                     <span class="size-40px rounded-circle overflow-hidden border border-transparent nav-user-img">
-                        @if (Auth::user()->avatar_original != null)
-                            <img src="{{ uploaded_asset(Auth::user()->avatar_original) }}" class="img-fit h-100" alt="{{ translate('avatar') }}"
+                        @if ($user->avatar_original != null)
+                            <img src="{{ $user_avatar }}" class="img-fit h-100" alt="{{ translate('avatar') }}"
                                 onerror="this.onerror=null;this.src='{{ static_asset('assets/img/avatar-place.png') }}';">
                         @else
                             <img src="{{ static_asset('assets/img/avatar-place.png') }}" class="image" alt="{{ translate('avatar') }}"
@@ -613,7 +616,7 @@
                         @endif
                     </span>
                     <!-- Name -->
-                    <h4 class="h5 fs-14 fw-700 text-dark ml-2 mb-0">{{ Auth::user()->name }}</h4>
+                    <h4 class="h5 fs-14 fw-700 text-dark ml-2 mb-0">{{ $user->name }}</h4>
                 </span>
             @else
                 <!--Login & Registration -->

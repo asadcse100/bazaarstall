@@ -29,20 +29,7 @@
                         <div class="form-group row">
                             <label class="col-md-3 col-from-label">{{translate('Product Name')}} <span class="text-danger">*</span></label>
                             <div class="col-md-8">
-                                <input type="text" class="form-control" name="name" placeholder="{{ translate('Product Name') }}" onchange="update_sku()" required>
-                            </div>
-                        </div>
-                        <div class="form-group row" id="category">
-                            <label class="col-md-3 col-from-label">{{translate('Category')}} <span class="text-danger">*</span></label>
-                            <div class="col-md-8">
-                                <select class="form-control aiz-selectpicker" name="category_id" id="category_id" data-live-search="true" required>
-                                    @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->getTranslation('name') }}</option>
-                                    @foreach ($category->childrenCategories as $childCategory)
-                                    @include('categories.child_category', ['child_category' => $childCategory])
-                                    @endforeach
-                                    @endforeach
-                                </select>
+                                <input type="text" class="form-control" name="name" value="{{ old('name') }}" placeholder="{{ translate('Product Name') }}" onchange="update_sku()" required>
                             </div>
                         </div>
                         <div class="form-group row" id="brand">
@@ -51,15 +38,15 @@
                                 <select class="form-control aiz-selectpicker" name="brand_id" id="brand_id" data-live-search="true">
                                     <option value="">{{ translate('Select Brand') }}</option>
                                     @foreach (\App\Models\Brand::all() as $brand)
-                                    <option value="{{ $brand->id }}">{{ $brand->getTranslation('name') }}</option>
+                                    <option value="{{ $brand->id }}" @selected(old('brand_id') == $brand->id)>{{ $brand->getTranslation('name') }}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-md-3 col-from-label">{{translate('Unit')}}</label>
+                            <label class="col-md-3 col-from-label">{{translate('Unit')}} <span class="text-danger">*</span></label>
                             <div class="col-md-8">
-                                <input type="text" class="form-control" name="unit" placeholder="{{ translate('Unit (e.g. KG, Pc etc)') }}" required>
+                                <input type="text" class="form-control" name="unit" value="{{ old('unit') }}" placeholder="{{ translate('Unit (e.g. KG, Pc etc)') }}" required>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -86,7 +73,7 @@
                         <div class="form-group row">
                             <label class="col-md-3 col-from-label">{{translate('Barcode')}}</label>
                             <div class="col-md-8">
-                                <input type="text" class="form-control" name="barcode" placeholder="{{ translate('Barcode') }}">
+                                <input type="text" class="form-control" name="barcode" value="{{ old('barcode') }}" placeholder="{{ translate('Barcode') }}">
                             </div>
                         </div>
                         @endif
@@ -150,16 +137,16 @@
                             <label class="col-md-3 col-from-label">{{translate('Video Provider')}}</label>
                             <div class="col-md-8">
                                 <select class="form-control aiz-selectpicker" name="video_provider" id="video_provider">
-                                    <option value="youtube">{{translate('Youtube')}}</option>
-                                    <option value="dailymotion">{{translate('Dailymotion')}}</option>
-                                    <option value="vimeo">{{translate('Vimeo')}}</option>
+                                    <option value="youtube" @selected(old('video_provider') == 'youtube')>{{translate('Youtube')}}</option>
+                                    <option value="dailymotion" @selected(old('video_provider') == 'dailymotion')>{{translate('Dailymotion')}}</option>
+                                    <option value="vimeo" @selected(old('video_provider') == 'vimeo')>{{translate('Vimeo')}}</option>
                                 </select>
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-md-3 col-from-label">{{translate('Video Link')}}</label>
                             <div class="col-md-8">
-                                <input type="text" class="form-control" name="video_link" placeholder="{{ translate('Video Link') }}">
+                                <input type="text" class="form-control" name="video_link" value="{{ old('video_link') }}" placeholder="{{ translate('Video Link') }}">
                                 <small class="text-muted">{{translate("Use proper link without extra parameter. Don't use short share link/embeded iframe code.")}}</small>
                             </div>
                         </div>
@@ -237,8 +224,8 @@
                             </div>
                             <div class="col-md-3">
                                 <select class="form-control aiz-selectpicker" name="discount_type">
-                                    <option value="amount">{{translate('Flat')}}</option>
-                                    <option value="percent">{{translate('Percent')}}</option>
+                                    <option value="amount" @selected(old('discount_type') == 'amount')>{{translate('Flat')}}</option>
+                                    <option value="percent" @selected(old('discount_type') == 'percent')>{{translate('Percent')}}</option>
                                 </select>
                             </div>
                         </div>
@@ -266,7 +253,7 @@
                                     {{translate('SKU')}}
                                 </label>
                                 <div class="col-md-6">
-                                    <input type="text" placeholder="{{ translate('SKU') }}" name="sku" class="form-control">
+                                    <input type="text" placeholder="{{ translate('SKU') }}" name="sku" value="{{ old('sku') }}" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -275,7 +262,7 @@
                                 {{translate('External link')}}
                             </label>
                             <div class="col-md-9">
-                                <input type="text" placeholder="{{ translate('External link') }}" name="external_link" class="form-control">
+                                <input type="text" placeholder="{{ translate('External link') }}" value="{{ old('external_link') }}" name="external_link" class="form-control">
                                 <small class="text-muted">{{translate('Leave it blank if you do not use external site link')}}</small>
                             </div>
                         </div>
@@ -284,7 +271,7 @@
                                 {{translate('External link button text')}}
                             </label>
                             <div class="col-md-9">
-                                <input type="text" placeholder="{{ translate('External link button text') }}" name="external_link_btn" class="form-control">
+                                <input type="text" placeholder="{{ translate('External link button text') }}" name="external_link_btn" value="{{ old('external_link_btn') }}" class="form-control">
                                 <small class="text-muted">{{translate('Leave it blank if you do not use external site link')}}</small>
                             </div>
                         </div>
@@ -302,21 +289,11 @@
                         <div class="form-group row">
                             <label class="col-md-3 col-from-label">{{translate('Description')}}</label>
                             <div class="col-md-8">
-                                <textarea class="aiz-text-editor" name="description"></textarea>
+                                <textarea class="aiz-text-editor" name="description">{{ old('description') }}</textarea>
                             </div>
                         </div>
                     </div>
                 </div>
-
-<!--                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0 h6">{{translate('Product Shipping Cost')}}</h5>
-                    </div>
-                    <div class="card-body">
-
-                    </div>
-                </div>-->
-
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0 h6">{{translate('PDF Specification')}}</h5>
@@ -346,13 +323,13 @@
                         <div class="form-group row">
                             <label class="col-md-3 col-from-label">{{translate('Meta Title')}}</label>
                             <div class="col-md-8">
-                                <input type="text" class="form-control" name="meta_title" placeholder="{{ translate('Meta Title') }}">
+                                <input type="text" class="form-control" name="meta_title" value="{{ old('meta_title') }}" placeholder="{{ translate('Meta Title') }}">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-md-3 col-from-label">{{translate('Description')}}</label>
                             <div class="col-md-8">
-                                <textarea name="meta_description" rows="8" class="form-control"></textarea>
+                                <textarea name="meta_description" rows="8" class="form-control">{{ old('meta_description') }}</textarea>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -371,10 +348,33 @@
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0 h6">{{ translate('Product Category') }}</h5>
+                        <h6 class="float-right fs-13 mb-0">
+                            {{ translate('Select Main') }}
+                            <span class="position-relative main-category-info-icon">
+                                <i class="las la-question-circle fs-18 text-info"></i>
+                                <span class="main-category-info bg-soft-info p-2 position-absolute d-none border">{{ translate('This will be used for commission based calculations and homepage category wise product Show.') }}</span>
+                            </span>
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="h-300px overflow-auto c-scrollbar-light">
+                            <ul class="hummingbird-treeview-converter list-unstyled" data-checkbox-name="category_ids[]" data-radio-name="category_id">
+                                @foreach ($categories as $category)
+                                <li id="{{ $category->id }}">{{ $category->name }}</li>
+                                    @foreach ($category->childrenCategories as $childCategory)
+                                        @include('backend.product.products.child_category', ['child_category' => $childCategory])
+                                    @endforeach
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="card">
                     <div class="card-header">
@@ -652,7 +652,29 @@
 
 @section('script')
 
+<!-- Treeview js -->
+<script src="{{ static_asset('assets/js/hummingbird-treeview.js') }}"></script>
+
 <script type="text/javascript">
+
+    $(document).ready(function() {
+        $("#treeview").hummingbird();
+
+        var main_id = '{{ old("category_id") }}';
+        var selected_ids = [];
+        @if(old("category_ids"))
+            selected_ids = @json(old("category_ids"));
+        @endif
+        for (let i = 0; i < selected_ids.length; i++) {
+            const element = selected_ids[i];
+            $('#treeview input:checkbox#'+element).prop('checked',true);
+            $('#treeview input:checkbox#'+element).parents( "ul" ).css( "display", "block" );
+            $('#treeview input:checkbox#'+element).parents( "li" ).children('.las').removeClass( "la-plus" ).addClass('la-minus');
+        }
+
+        $('#treeview input:radio[value='+main_id+']').prop('checked',true);
+    });
+
     $('form').bind('submit', function (e) {
 		if ( $(".action-btn").attr('attempted') == 'true' ) {
 			//stop submitting the form because we have already clicked submit.
@@ -760,7 +782,7 @@
                 $('#sku_combination').html(data);
                 AIZ.uploader.previewGenerate();
                 AIZ.plugins.fooTable();
-                if (data.length > 1) {
+                if (data.trim().length > 1) {
                    $('#show-hide-div').hide();
                 }
                 else {
@@ -780,5 +802,4 @@
     });
 
 </script>
-
 @endsection

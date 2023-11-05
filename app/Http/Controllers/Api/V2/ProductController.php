@@ -17,6 +17,7 @@ use App\Http\Resources\V2\FlashDealCollection;
 use App\Http\Resources\V2\ProductMiniCollection;
 use App\Http\Resources\V2\ProductDetailCollection;
 use App\Http\Resources\V2\DigitalProductDetailCollection;
+use App\Models\Category;
 use App\Models\CustomerProduct;
 
 class ProductController extends Controller
@@ -35,10 +36,6 @@ class ProductController extends Controller
         //     return new DigitalProductDetailCollection(Product::where('id', $id)->get());
         // }
     }
-
-
-
-
 
     // public function admin()
     // {
@@ -164,15 +161,13 @@ class ProductController extends Controller
 
     public function category($id, Request $request)
     {
-        $category_ids = CategoryUtility::children_ids($id);
-        $category_ids[] = $id;
-
-        $products = Product::whereIn('category_id', $category_ids)->physical();
+        $category = Category::find($id);
+        $products = $category->products()->physical();
 
         if ($request->name != "" || $request->name != null) {
             $products = $products->where('name', 'like', '%' . $request->name . '%');
         }
-        $products->where('published', 1);
+        
         return new ProductMiniCollection(filter_products($products)->latest()->paginate(10));
     }
 
@@ -204,10 +199,14 @@ class ProductController extends Controller
 
     public function featured()
     {
-
-
         $products = Product::where('featured', 1)->physical();
         return new ProductMiniCollection(filter_products($products)->latest()->paginate(10));
+    }
+
+    public function inhouse()
+    {
+        $products = Product::where('added_by', 'admin');
+        return new ProductMiniCollection(filter_products($products)->latest()->paginate(12));
     }
 
     public function digital()
@@ -215,8 +214,6 @@ class ProductController extends Controller
         $products = Product::digital();
         return new ProductMiniCollection(filter_products($products)->latest()->paginate(10));
     }
-
-
 
     public function bestSeller()
     {

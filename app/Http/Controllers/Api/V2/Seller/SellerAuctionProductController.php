@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V2\Seller;
 
 use App\Http\Controllers\Api\V2\Controller;
+use App\Http\Requests\ProductRequest;
 use App\Http\Resources\V2\Seller\AuctionProductBidCollection;
 use App\Http\Resources\V2\Seller\AuctionProductCollection;
 use App\Http\Resources\V2\Seller\AuctionProductDetailsResource;
@@ -29,7 +30,7 @@ class SellerAuctionProductController extends Controller
         return new AuctionProductCollection($products->paginate(10));
     }
 
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
         if (addon_is_activated('seller_subscription')) {
             if (!seller_package_validity_check(auth()->user()->id)) {
@@ -49,7 +50,7 @@ class SellerAuctionProductController extends Controller
         return new AuctionProductDetailsResource($product);
     }
 
-    public function update(Request $request, $id)
+    public function update(ProductRequest $request, $id)
     {
         (new AuctionService)->update($request, $id);
         return $this->success(translate('Auction Product has been updated successfully'));

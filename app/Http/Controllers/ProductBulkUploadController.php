@@ -14,7 +14,8 @@ use Auth;
 
 class ProductBulkUploadController extends Controller
 {
-    public function __construct() {
+    public function __construct()
+    {
 
         $this->middleware(['permission:product_bulk_import'])->only('index');
         $this->middleware(['permission:product_bulk_export'])->only('export');
@@ -23,20 +24,19 @@ class ProductBulkUploadController extends Controller
     public function index()
     {
         if (Auth::user()->user_type == 'seller') {
-            if(Auth::user()->shop->verification_status){
+            if (Auth::user()->shop->verification_status) {
                 return view('seller.product_bulk_upload.index');
-            }
-            else{
+            } else {
                 flash(translate('Your shop is not verified yet!'))->warning();
                 return back();
             }
-        }
-        elseif (Auth::user()->user_type == 'admin' || Auth::user()->user_type == 'staff') {
+        } elseif (Auth::user()->user_type == 'admin' || Auth::user()->user_type == 'staff') {
             return view('backend.product.bulk_upload.index');
         }
     }
 
-    public function export(){
+    public function export()
+    {
         return Excel::download(new ProductsExport, 'products.xlsx');
     }
 
@@ -44,7 +44,7 @@ class ProductBulkUploadController extends Controller
     {
         $categories = Category::all();
 
-        return PDF::loadView('backend.downloads.category',[
+        return PDF::loadView('backend.downloads.category', [
             'categories' => $categories,
         ], [], [])->download('category.pdf');
     }
@@ -53,29 +53,27 @@ class ProductBulkUploadController extends Controller
     {
         $brands = Brand::all();
 
-        return PDF::loadView('backend.downloads.brand',[
+        return PDF::loadView('backend.downloads.brand', [
             'brands' => $brands,
         ], [], [])->download('brands.pdf');
     }
 
     public function pdf_download_seller()
     {
-        $users = User::where('user_type','seller')->get();
+        $users = User::where('user_type', 'seller')->get();
 
-        return PDF::loadView('backend.downloads.user',[
+        return PDF::loadView('backend.downloads.user', [
             'users' => $users,
         ], [], [])->download('user.pdf');
-
     }
 
     public function bulk_upload(Request $request)
     {
-        if($request->hasFile('bulk_file')){
+        if ($request->hasFile('bulk_file')) {
             $import = new ProductsImport;
             Excel::import($import, request()->file('bulk_file'));
         }
-        
+
         return back();
     }
-
 }

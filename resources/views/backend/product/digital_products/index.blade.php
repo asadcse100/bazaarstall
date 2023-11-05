@@ -43,7 +43,7 @@
                         <th data-breakpoints="lg">{{translate('Approved')}}</th>
                     @endif
                     <th data-breakpoints="lg">{{translate('Featured')}}</th>
-                    <th data-breakpoints="lg">{{translate('Options')}}</th>
+                    <th data-breakpoints="lg" class="text-right">{{translate('Options')}}</th>
                 </tr>
             </thead>
             <tbody>

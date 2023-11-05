@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V2;
 
+use App\Http\Middleware\EnsureSystemKey;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'v2/auth', 'middleware' => ['app_language']], function () {
@@ -67,6 +68,7 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
         Route::get('purchase-history-details/{id}', 'App\Http\Controllers\Api\V2\PurchaseHistoryController@details')->middleware('auth:sanctum');
         Route::get('purchase-history-items/{id}', 'App\Http\Controllers\Api\V2\PurchaseHistoryController@items')->middleware('auth:sanctum');
         Route::get('re-order/{id}', 'App\Http\Controllers\Api\V2\PurchaseHistoryController@re_order')->middleware('auth:sanctum');
+        Route::get('invoice/download/{id}', 'App\Http\Controllers\Api\V2\InvoiceController@invoice_download')->middleware('auth:sanctum');
 
         Route::prefix('classified')->group(function () {
             Route::get('/own-products', 'App\Http\Controllers\Api\V2\CustomerProductController@ownProducts')->middleware('auth:sanctum');
@@ -172,6 +174,11 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
         Route::get('online-pay/failed', 'paymentFailed');
     });
 
+
+    Route::get('coupon-list', [CouponController::class, 'couponList']);
+    Route::get('coupon-products/{id}', [CouponController::class, 'getCouponProducts']);
+
+
     Route::get('get-search-suggestions', 'App\Http\Controllers\Api\V2\SearchSuggestionController@getList');
     Route::get('languages', 'App\Http\Controllers\Api\V2\LanguageController@getList');
 
@@ -212,6 +219,7 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
     Route::get('filter/brands', 'App\Http\Controllers\Api\V2\FilterController@brands');
 
     // Route::get('products/admin', 'App\Http\Controllers\Api\V2\ProductController@admin');
+    Route::get('products/inhouse', 'App\Http\Controllers\Api\V2\ProductController@inhouse');
     Route::get('products/seller/{id}', 'App\Http\Controllers\Api\V2\ProductController@seller');
     Route::get('products/category/{id}', 'App\Http\Controllers\Api\V2\ProductController@category')->name('api.products.category');
     Route::get('products/sub-category/{id}', 'App\Http\Controllers\Api\V2\ProductController@subCategory')->name('products.subCategory');
@@ -284,32 +292,18 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
     Route::any('stripe/cancel', 'App\Http\Controllers\Api\V2\StripeController@cancel')->name('api.stripe.cancel');
 
     Route::any('paypal/payment/url', 'App\Http\Controllers\Api\V2\PaypalController@getUrl')->name('api.paypal.url');
-    Route::any('paypal/payment/done', 'App\Http\Controllers\Api\V2\PaypalController@getDone')->name('api.paypal.done');
-    Route::any('paypal/payment/cancel', 'App\Http\Controllers\Api\V2\PaypalController@getCancel')->name('api.paypal.cancel');
-
+    Route::any('amarpay', [AamarpayController::class, 'pay'])->name('api.amarpay.url');
     Route::any('khalti/payment/pay', 'App\Http\Controllers\Api\V2\KhaltiController@pay')->name('api.khalti.url');
-    Route::any('khalti/payment/success', 'App\Http\Controllers\Api\V2\KhaltiController@paymentDone')->name('api.khalti.success');
-    Route::any('khalti/payment/cancel', 'App\Http\Controllers\Api\V2\KhaltiController@getCancel')->name('api.khalti.cancel');
-
     Route::any('razorpay/pay-with-razorpay', 'App\Http\Controllers\Api\V2\RazorpayController@payWithRazorpay')->name('api.razorpay.payment');
     Route::any('razorpay/payment', 'App\Http\Controllers\Api\V2\RazorpayController@payment')->name('api.razorpay.payment');
-    Route::post('razorpay/success', 'App\Http\Controllers\Api\V2\RazorpayController@payment_success')->name('api.razorpay.success');
-
     Route::any('paystack/init', 'App\Http\Controllers\Api\V2\PaystackController@init')->name('api.paystack.init');
-    Route::post('paystack/success', 'App\Http\Controllers\Api\V2\PaystackController@payment_success')->name('api.paystack.success');
-
     Route::any('iyzico/init', 'App\Http\Controllers\Api\V2\IyzicoController@init')->name('api.iyzico.init');
-    Route::any('iyzico/callback', 'App\Http\Controllers\Api\V2\IyzicoController@callback')->name('api.iyzico.callback');
-    Route::post('iyzico/success', 'App\Http\Controllers\Api\V2\IyzicoController@payment_success')->name('api.iyzico.success');
-
 
     Route::get('bkash/api/webpage/{token}/{amount}', 'App\Http\Controllers\Api\V2\BkashController@webpage')->name('api.bkash.webpage');
     Route::any('bkash/api/checkout/{token}/{amount}', 'App\Http\Controllers\Api\V2\BkashController@checkout')->name('api.bkash.checkout');
-    Route::any('bkash/api/callback', 'App\Http\Controllers\Api\V2\BkashController@callback')->name('api.bkash.callback');
 
     Route::any('bkash/api/execute/{token}', 'App\Http\Controllers\Api\V2\BkashController@execute')->name('api.bkash.execute');
     Route::any('bkash/api/fail', 'App\Http\Controllers\Api\V2\BkashController@fail')->name('api.bkash.fail');
-    Route::post('bkash/api/success', 'App\Http\Controllers\Api\V2\BkashController@payment_success')->name('api.bkash.success');
     Route::post('bkash/api/process', 'App\Http\Controllers\Api\V2\BkashController@process')->name('api.bkash.process');
 
 
@@ -317,22 +311,11 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
     Route::post('nagad/process', 'App\Http\Controllers\Api\V2\NagadController@process');
 
     Route::get('sslcommerz/begin', 'App\Http\Controllers\Api\V2\SslCommerzController@begin');
-    Route::any('sslcommerz/success', 'App\Http\Controllers\Api\V2\SslCommerzController@payment_success');
-    Route::any('sslcommerz/fail', 'App\Http\Controllers\Api\V2\SslCommerzController@payment_fail');
-    Route::any('sslcommerz/cancel', 'App\Http\Controllers\Api\V2\SslCommerzController@payment_cancel');
 
     Route::any('flutterwave/payment/url', 'App\Http\Controllers\Api\V2\FlutterwaveController@getUrl')->name('api.flutterwave.url');
-    Route::any('flutterwave/payment/callback', 'App\Http\Controllers\Api\V2\FlutterwaveController@callback')->name('api.flutterwave.callback');
 
     Route::any('paytm/payment/pay', 'App\Http\Controllers\Api\V2\PaytmController@pay')->name('api.paytm.pay');
-    Route::any('paytm/payment/callback', 'App\Http\Controllers\Api\V2\PaytmController@callback')->name('api.paytm.callback');
-
-    Route::controller(InstamojoController::class)->group(function () {
-        Route::get('instamojo/pay', 'pay')->middleware('auth:sanctum');
-        Route::any('instamojo/success', 'success');
-        Route::get('instamojo/failed', 'paymentFailed');
-    });
-
+    Route::get('instamojo/pay', 'App\Http\Controllers\Api\V2\InstamojoController@pay');
 
     Route::post('offline/payment/submit', 'App\Http\Controllers\Api\V2\OfflinePaymentController@submit')->name('api.offline.payment.submit');
 
@@ -350,8 +333,31 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function () {
     //Pickup Point list
     Route::get('pickup-list', 'App\Http\Controllers\Api\V2\ShippingController@pickup_list');
 
-    Route::get('google-recaptcha', function () {
-        return view("frontend.google_recaptcha.app_recaptcha");
+
+
+    Route::withoutMiddleware([EnsureSystemKey::class])->group(function () {
+        Route::get('google-recaptcha', function () {
+            return view("frontend.google_recaptcha.app_recaptcha");
+        });
+        Route::any('paypal/payment/done', 'App\Http\Controllers\Api\V2\PaypalController@getDone')->name('api.paypal.done');
+        Route::any('paypal/payment/cancel', 'App\Http\Controllers\Api\V2\PaypalController@getCancel')->name('api.paypal.cancel');
+        Route::any('amarpay/success', [AamarpayController::class, 'success'])->name('api.amarpay.success');
+        Route::any('amarpay/cancel', [AamarpayController::class, 'fail'])->name('api.amarpay.cancel');
+        Route::any('khalti/payment/success', 'App\Http\Controllers\Api\V2\KhaltiController@paymentDone')->name('api.khalti.success');
+        Route::any('khalti/payment/cancel', 'App\Http\Controllers\Api\V2\KhaltiController@getCancel')->name('api.khalti.cancel');
+        Route::post('razorpay/success', 'App\Http\Controllers\Api\V2\RazorpayController@payment_success')->name('api.razorpay.success');
+        Route::post('paystack/success', 'App\Http\Controllers\Api\V2\PaystackController@payment_success')->name('api.paystack.success');
+        Route::any('iyzico/callback', 'App\Http\Controllers\Api\V2\IyzicoController@callback')->name('api.iyzico.callback');
+        Route::post('iyzico/success', 'App\Http\Controllers\Api\V2\IyzicoController@payment_success')->name('api.iyzico.success');
+        Route::any('bkash/api/callback', 'App\Http\Controllers\Api\V2\BkashController@callback')->name('api.bkash.callback');
+        Route::post('bkash/api/success', 'App\Http\Controllers\Api\V2\BkashController@payment_success')->name('api.bkash.success');
+        Route::any('sslcommerz/success', 'App\Http\Controllers\Api\V2\SslCommerzController@payment_success');
+        Route::any('sslcommerz/fail', 'App\Http\Controllers\Api\V2\SslCommerzController@payment_fail');
+        Route::any('sslcommerz/cancel', 'App\Http\Controllers\Api\V2\SslCommerzController@payment_cancel');
+        Route::any('flutterwave/payment/callback', 'App\Http\Controllers\Api\V2\FlutterwaveController@callback')->name('api.flutterwave.callback');
+        Route::any('paytm/payment/callback', 'App\Http\Controllers\Api\V2\PaytmController@callback')->name('api.paytm.callback');
+        Route::get('instamojo/success', 'App\Http\Controllers\Api\V2\InstamojoController@success');
+        Route::get('instamojo/failed', 'App\Http\Controllers\Api\V2\InstamojoController@failed');
     });
 });
 

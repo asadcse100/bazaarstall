@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api\V2;
 
-use App\Models\User;
 use App\Models\CombinedOrder;
+use App\Models\User;
 use Illuminate\Http\Request;
 use PaytmWallet;
 
@@ -18,16 +18,16 @@ class PaytmController extends Controller
         $user_id = $request->user_id;
         $package_id = 0;
 
-        if(isset($request->package_id)){
+        if (isset($request->package_id)) {
             $package_id = $request->package_id;
         }
 
-        
+
         $user = User::find($request->user_id);
 
         if ($payment_type == 'cart_payment') {
             $combined_order = CombinedOrder::find($combined_order_id);
-            $amount = floatval($combined_order->grand_total) ;
+            $amount = floatval($combined_order->grand_total);
 
             $payment = PaytmWallet::with('receive');
             $payment->prepare([
@@ -36,16 +36,18 @@ class PaytmController extends Controller
                 'mobile_number' => $user->phone,
                 'email' => $user->email,
                 'amount' => $amount,
-                'callback_url' => route('api.paytm.callback', 
-                [
-                    "payment_type" => $payment_type, 
-                    "combined_order_id" => $combined_order_id, 
-                    "amount" => $amount, 
-                    "user_id" => $user_id
-                ])
-                
+                'callback_url' => route(
+                    'api.paytm.callback',
+                    [
+                        "payment_type" => $payment_type,
+                        "combined_order_id" => $combined_order_id,
+                        "amount" => $amount,
+                        "user_id" => $user_id
+                    ]
+                )
+
             ]);
-   
+
             return $payment->receive();
         } elseif ($payment_type == 'wallet_payment') {
             $amount = $amount;
@@ -56,13 +58,15 @@ class PaytmController extends Controller
                 'mobile_number' => $user->phone,
                 'email' => $user->email,
                 'amount' => $amount,
-                'callback_url' => route('api.paytm.callback', 
-                [
-                    "payment_type" => $payment_type, 
-                    "combined_order_id" => $combined_order_id, 
-                    "amount" => $amount, 
-                    "user_id" => $user_id
-                ])
+                'callback_url' => route(
+                    'api.paytm.callback',
+                    [
+                        "payment_type" => $payment_type,
+                        "combined_order_id" => $combined_order_id,
+                        "amount" => $amount,
+                        "user_id" => $user_id
+                    ]
+                )
             ]);
             return $payment->receive();
         } elseif ($payment_type == 'seller_package_payment') {
@@ -74,14 +78,16 @@ class PaytmController extends Controller
                 'mobile_number' => $user->phone,
                 'email' => $user->email,
                 'amount' => $amount,
-                'callback_url' => route('api.paytm.callback', 
-                [
-                    "payment_type" => $payment_type, 
-                    "combined_order_id" => $combined_order_id, 
-                    "amount" => $amount, 
-                    "user_id" => $user_id,
-                    "package_id" => $package_id,
-                ])
+                'callback_url' => route(
+                    'api.paytm.callback',
+                    [
+                        "payment_type" => $payment_type,
+                        "combined_order_id" => $combined_order_id,
+                        "amount" => $amount,
+                        "user_id" => $user_id,
+                        "package_id" => $package_id,
+                    ]
+                )
             ]);
             return $payment->receive();
         }
@@ -101,10 +107,10 @@ class PaytmController extends Controller
             }
 
             if ($request->payment_type == 'wallet_payment') {
-                wallet_payment_done($request->user_id, $request->amount, 'Flutterwave', json_encode($response));
+                wallet_payment_done($request->user_id, $request->amount, 'Paytm', json_encode($response));
             }
             if ($request->payment_type == 'seller_package_payment') {
-                seller_purchase_payment_done($request->user_id, $request->package_id, $request->amount, 'Flutterwave', json_encode($response));
+                seller_purchase_payment_done($request->user_id, $request->package_id, $request->amount, 'Paytm', json_encode($response));
             }
 
             return response()->json(['result' => true, 'message' => translate("Payment is successful")]);
