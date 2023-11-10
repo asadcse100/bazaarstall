@@ -11213,6 +11213,11 @@ ul.apps a:hover i{
 .aiz-carousel.product-gallery-thumb .slick-track {
     transform: translate3d(0, 0, 0) !important;
 }
+
+[dir="rtl"] .mr-4 {
+    margin-right: inherit !important;
+}
+
 @media (min-width: 576px){
     .aiz-mobile-bottom-nav{
         width: 463px !important;
@@ -11268,5 +11273,87 @@ ul.apps a:hover i{
     }
     .h-xl-100{
         height: 100% !important;
+    }
+}
+/* Main category info*/
+.main-category-info-icon{
+    cursor: pointer;
+}
+.main-category-info{
+    width: max-content;
+    right: 0;
+    bottom: 20px;
+    border-radius: 4px;
+}
+.main-category-info-icon:hover .main-category-info{
+    display: block !important;
+}
+
+/* treeview*/
+.hummingbird-treeview,
+.hummingbird-treeview *
+{
+    list-style: none;
+    font-size: 13px;
+    line-height: 12px;
+}
+.hummingbird-treeview label {
+    font-weight: normal;
+    width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 20px;
+}
+.hummingbird-treeview input[type=checkbox] {
+    width: 13px;
+    height: 12px;
+    padding: 0px;
+    margin: 0px;
+}
+.hummingbird-treeview input[type=radio] {
+    float: right;
+    margin-right: 10px;
+}
+.hummingbird-treeview ul:not(.hummingbird-base) {
+    display: none;
+}
+.hummingbird-treeview .la {
+    font-style: normal;
+    cursor: pointer;
+}
+.hummingbird-treeview .las {
+    font-style: normal;
+    cursor: pointer;
+    position: absolute;
+    margin-top: 2px;
+}
+.hummingbird-base {
+    white-space:nowrap;
+    padding-inline-start: 0px !important;
+}
+.hummingbird-base ul {
+    padding-inline-start: 15px !important;
+}
+.hummingbird-base li{
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.hummingbird-base li[data-id]:not([data-id=""]) {
+    position: relative;
+}
+@media (min-width: 1024px) and (max-width: 1399px) {
+    .hummingbird-treeview label {
+        width: 180px;
+    }
+}
+@media (max-width: 375px) {
+    .hummingbird-treeview label {
+        width: 200px;
+    }
+}
+@media (max-width: 345px) {
+    .hummingbird-treeview label {
+        width: 180px;
     }
 }
