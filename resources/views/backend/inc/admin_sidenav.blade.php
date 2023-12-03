@@ -228,7 +228,7 @@
                 @endcanany
 
                 <!-- Auction Product -->
-                @if(addon_is_activated('auction'))
+
                     @canany(['add_auction_product','view_all_auction_products','view_inhouse_auction_products','view_seller_auction_products','view_auction_product_orders'])
                         <li class="aiz-side-nav-item">
                             <a href="#" class="aiz-side-nav-link">
@@ -287,10 +287,10 @@
                             </ul>
                         </li>
                     @endcanany
-                @endif
+
 
                 <!-- Wholesale Product -->
-                @if(addon_is_activated('wholesale'))
+
                     @canany(['add_wholesale_product','view_all_wholesale_products','view_inhouse_wholesale_products','view_sellers_wholesale_products'])
                         <li class="aiz-side-nav-item">
                             <a href="#" class="aiz-side-nav-link">
@@ -341,7 +341,7 @@
                             </ul>
                         </li>
                     @endcanany
-                @endif
+
 
                 <!-- Sale -->
                 @canany(['view_all_orders', 'view_inhouse_orders','view_seller_orders','view_pickup_point_orders'])
@@ -463,7 +463,7 @@
                 @endif
 
                 <!-- Refund addon -->
-                @if (addon_is_activated('refund_request'))
+
                     @canany(['view_refund_requests','view_approved_refund_requests','view_rejected_refund_requests','refund_request_configuration'])
                         <li class="aiz-side-nav-item">
                             <a href="#" class="aiz-side-nav-link">
@@ -512,7 +512,7 @@
                             </ul>
                         </li>
                     @endcanany
-                @endif
+
 
                 <!-- Customers -->
                 @canany(['view_all_customers','view_classified_products','view_classified_packages'])
@@ -862,7 +862,7 @@
                 @endcanany
 
                 <!-- Affiliate Addon -->
-                @if (addon_is_activated('affiliate_system'))
+     
                     @canany(['affiliate_registration_form_config','affiliate_configurations','view_affiliate_users','view_all_referral_users','view_affiliate_withdraw_requests','view_affiliate_logs'])
                         <li class="aiz-side-nav-item">
                             <a href="#" class="aiz-side-nav-link">
@@ -931,10 +931,10 @@
                             </ul>
                         </li>
                     @endcanany
-                @endif
+
 
                 <!-- Offline Payment Addon-->
-                @if (addon_is_activated('offline_payment'))
+
                     @canany(['view_all_manual_payment_methods','view_all_offline_wallet_recharges','view_all_offline_customer_package_payments','view_all_offline_seller_package_payments'])
                         <li class="aiz-side-nav-item">
                             <a href="#" class="aiz-side-nav-link">
@@ -995,7 +995,7 @@
                             </ul>
                         </li>
                     @endcanany
-                @endif
+
 
                 <!-- Paytm Addon -->
                 @if (addon_is_activated('paytm') && auth()->user()->can('asian_payment_gateway_configuration'))
