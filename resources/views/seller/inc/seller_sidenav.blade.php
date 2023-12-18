@@ -14,10 +14,10 @@
             </div>
         </div>
         <div class="aiz-side-nav-wrap">
-            <div class="px-20px mb-3">
+            <!-- <div class="px-20px mb-3">
                 <input class="form-control bg-soft-secondary border-0 form-control-sm" type="text" name=""
                     placeholder="{{ translate('Search in menu') }}" id="menu-search" onkeyup="menuSearch()">
-            </div>
+            </div> -->
             <ul class="aiz-side-nav-list" id="search-menu">
             </ul>
             <ul class="aiz-side-nav-list" id="main-menu" data-toggle="aiz-side-menu">
@@ -185,6 +185,14 @@
                         class="aiz-side-nav-link {{ areActiveRoutes(['seller.shop.index']) }}">
                         <i class="las la-cog aiz-side-nav-icon"></i>
                         <span class="aiz-side-nav-text">{{ translate('Shop Setting') }}</span>
+                    </a>
+                </li>
+
+                <li class="aiz-side-nav-item">
+                    <a href="{{ route('seller.landing.index') }}"
+                        class="aiz-side-nav-link {{ areActiveRoutes(['seller.landing.index']) }}">
+                        <i class="fab la-elementor aiz-side-nav-icon"></i>
+                        <span class="aiz-side-nav-text">{{ translate('Landing Page') }}</span>
                     </a>
                 </li>
 

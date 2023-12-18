@@ -89,6 +89,14 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
         Route::post('/shop/verification_info_store', 'verify_form_store')->name('shop.verify.store');
     });
 
+    //Landing
+    Route::controller(LandingController::class)->group(function () {
+        Route::get('/landing', 'index')->name('landing.index');
+        Route::post('/landing/update', 'update')->name('landing.update');
+        Route::get('/landing/apply-for-verification', 'verify_form')->name('landing.verify');
+        Route::post('/landing/verification_info_store', 'verify_form_store')->name('landing.verify.store');
+    });
+
     //Payments
     Route::resource('payments', PaymentController::class);
 
