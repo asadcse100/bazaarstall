@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\BusinessSetting;
 use Artisan;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\URL;
 
 class BusinessSettingsController extends Controller
 {
@@ -364,7 +366,6 @@ class BusinessSettingsController extends Controller
 
     public function update(Request $request)
     {
-
         foreach ($request->types as $key => $type) {
             if($type == 'site_name'){
                 $this->overWriteEnvFile('APP_NAME', $request[$type]);
@@ -410,7 +411,11 @@ class BusinessSettingsController extends Controller
         Artisan::call('cache:clear');
 
         flash(translate("Settings updated successfully"))->success();
-        return back();
+        // If the request from a tabs with tab input
+        if($request->has('tab')){
+            return Redirect::to(URL::previous() . "#" . $request->tab);
+        }
+        return redirect()->back();
     }
 
     public function updateActivationSettings(Request $request)

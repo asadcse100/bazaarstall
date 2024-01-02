@@ -8,13 +8,15 @@
     @if ($topbar_banner != null)
         <div class="position-relative top-banner removable-session z-1035 d-none" data-key="top-banner"
             data-value="removed">
-            <a href="{{ get_setting('topbar_banner_link') }}" class="d-block text-reset">
-                <img src="{{ $topbar_banner_asset }}" class="d-none d-xl-block img-fit" alt="{{ translate('topbar_banner') }}">
+            <a href="{{ get_setting('topbar_banner_link') }}" class="d-block text-reset h-40px h-lg-60px">
                 <!-- For Large device -->
+                <img src="{{ $topbar_banner_asset }}" class="d-none d-xl-block img-fit h-100" alt="{{ translate('topbar_banner') }}">
+                <!-- For Medium device -->
                 <img src="{{ $topbar_banner_medium != null ? uploaded_asset($topbar_banner_medium) : $topbar_banner_asset }}"
-                    class="d-none d-md-block d-xl-none img-fit" alt="{{ translate('topbar_banner') }}"> <!-- For Medium device -->
+                    class="d-none d-md-block d-xl-none img-fit h-100" alt="{{ translate('topbar_banner') }}"> 
+                <!-- For Small device -->
                 <img src="{{ $topbar_banner_small != null ? uploaded_asset($topbar_banner_small) : $topbar_banner_asset }}"
-                    class="d-md-none img-fit" alt="{{ translate('topbar_banner') }}"> <!-- For Small device -->
+                    class="d-md-none img-fit h-100" alt="{{ translate('topbar_banner') }}">
             </a>
             <button class="btn text-white h-100 absolute-top-right set-session" data-key="top-banner"
                 data-value="removed" data-toggle="remove-parent" data-parent=".top-banner">
@@ -211,13 +213,13 @@
                     <!-- Compare -->
                     <div class="d-none d-lg-block ml-3 mr-0">
                         <div class="" id="compare">
-                            @include('frontend.partials.compare')
+                            @include('frontend.'.get_setting('homepage_select').'.partials.compare')
                         </div>
                     </div>
                     <!-- Wishlist -->
                     <div class="d-none d-lg-block mr-3" style="margin-left: 36px;">
                         <div class="" id="wishlist">
-                            @include('frontend.partials.wishlist')
+                            @include('frontend.'.get_setting('homepage_select').'.partials.wishlist')
                         </div>
                     </div>
                     @if (!isAdmin())
@@ -294,10 +296,10 @@
                         </ul>
                     @endif
 
-                    <div class="ml-auto mr-0">
+                    <div class="d-none d-xl-block ml-auto mr-0">
                         @auth
                             <span
-                                class="d-none d-xl-flex align-items-center nav-user-info py-20px @if (isAdmin()) ml-5 @endif"
+                                class="d-flex align-items-center nav-user-info py-20px @if (isAdmin()) ml-5 @endif"
                                 id="nav-user-info">
                                 <!-- Image -->
                                 <span
@@ -316,7 +318,7 @@
                             </span>
                         @else
                             <!--Login & Registration -->
-                            <span class="d-none d-xl-flex align-items-center nav-user-info ml-3">
+                            <span class="d-flex align-items-center nav-user-info ml-3">
                                 <!-- Image -->
                                 <span
                                     class="size-40px rounded-circle overflow-hidden border d-flex align-items-center justify-content-center nav-user-img">
@@ -554,6 +556,9 @@
                         </div>
                     </div>
                     <!-- Header Menus -->
+                    @php
+                        $nav_txt_color = ((get_setting('header_nav_menu_text') == 'light') ||  (get_setting('header_nav_menu_text') == null)) ? 'text-white' : 'text-dark';
+                    @endphp
                     <div class="ml-xl-4 w-100 overflow-hidden">
                         <div class="d-flex align-items-center justify-content-center justify-content-xl-start h-100">
                             <ul class="list-inline mb-0 pl-0 hor-swipe c-scrollbar-light">
@@ -561,7 +566,7 @@
                                     @foreach (json_decode(get_setting('header_menu_labels'), true) as $key => $value)
                                         <li class="list-inline-item mr-0 animate-underline-white">
                                             <a href="{{ json_decode(get_setting('header_menu_links'), true)[$key] }}"
-                                                class="fs-13 px-3 py-3 d-inline-block fw-700 text-white header_menu_links hov-bg-black-10
+                                                class="fs-13 px-3 py-3 d-inline-block fw-700 {{ $nav_txt_color }} header_menu_links hov-bg-black-10
                                             @if (url()->current() == json_decode(get_setting('header_menu_links'), true)[$key]) active @endif">
                                                 {{ translate($value) }}
                                             </a>
@@ -575,7 +580,7 @@
                     <div class="d-none d-xl-block align-self-stretch ml-5 mr-0 has-transition bg-black-10"
                         data-hover="dropdown">
                         <div class="nav-cart-box dropdown h-100" id="cart_items" style="width: max-content;">
-                            @include('frontend.partials.cart')
+                            @include('frontend.'.get_setting('homepage_select').'.partials.cart')
                         </div>
                     </div>
                 </div>
@@ -586,7 +591,7 @@
                 <div class="container">
                     <div class="d-flex position-relative">
                         <div class="position-static">
-                            @include('frontend.partials.category_menu')
+                            @include('frontend.'.get_setting("homepage_select").'.partials.category_menu')
                         </div>
                     </div>
                 </div>

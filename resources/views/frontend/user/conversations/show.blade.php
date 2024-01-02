@@ -36,7 +36,7 @@
 
         <div class="card-body">
             <!-- Conversations -->
-            <ul class="list-group list-group-flush">
+            {{-- <ul class="list-group list-group-flush">
                 @foreach($conversation->messages as $message)
                     <li class="list-group-item px-0">
                         <div class="media mb-2">
@@ -67,7 +67,11 @@
                         </p>
                     </li>
                 @endforeach
-            </ul>
+            </ul> --}}
+            <!-- Conversations -->
+            <div id="messages">
+                @include('frontend.'.get_setting('homepage_select').'.partials.messages', ['conversation', $conversation])
+            </div>
             
             <!-- Send message -->
             <form class="pt-4" action="{{ route('messages.store') }}" method="POST">
@@ -95,6 +99,6 @@
     refresh_messages(); // This will run on page load
     setInterval(function(){
         refresh_messages() // this will run after every 4 seconds
-    }, 4000);
+    }, 5000);
     </script>
 @endsection

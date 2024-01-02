@@ -2,6 +2,21 @@
 
 @section('panel_content')
 
+    @php
+        $welcomeCoupon = ifUserHasWelcomeCouponAndNotUsed();
+    @endphp
+    @if($welcomeCoupon)
+        <div class="alert alert-primary align-items-center border d-flex flex-wrap justify-content-between" style="border-color: #3490F3 !important;">
+            @php
+                $discount = $welcomeCoupon->discount_type == 'amount' ? single_price($welcomeCoupon->discount) : $welcomeCoupon->discount.'%';
+            @endphp
+            <div class="fw-400 fs-14" style="color: #3490F3 !important;">   
+                {{ translate('Welcome Coupon') }} <strong>{{ $discount }}</strong> {{ translate('Discount on your Purchase Within') }} <strong>{{ $welcomeCoupon->validation_days }}</strong> {{ translate('days of Registration') }}
+            </div>
+            <button class="btn btn-sm mt-3 mt-lg-0 rounded-4" onclick="copyCouponCode('{{ $welcomeCoupon->coupon_code }}')" style="background-color: #3490F3; color: white;" >{{ translate('Copy coupon Code') }}</button>
+        </div>
+    @endif
+
     <div class="row gutters-16">
         <!-- Wallet summary -->
         @if (get_setting('wallet_system') == 1)
@@ -55,7 +70,7 @@
                     <!-- Club Point summary -->
                     @if (addon_is_activated('club_point'))
                     <div class="col">
-                        <div class="p-4 bg-warning">
+                        <div class="p-4 bg-secondary-base">
                             <div class="d-flex align-items-center pb-4 ">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
                                     <g id="Group_25000" data-name="Group 25000" transform="translate(-926 -614)">
@@ -268,7 +283,7 @@
 
 @section('modal')
     <!-- Wallet Recharge Modal -->
-    @include('frontend.partials.wallet_modal')
+    @include('frontend.'.get_setting('homepage_select').'.partials.wallet_modal')
     <script type="text/javascript">
         function show_wallet_modal() {
             $('#wallet_modal').modal('show');
@@ -276,11 +291,11 @@
     </script>
     
     <!-- Address modal Modal -->
-    @include('frontend.partials.address_modal')
+    @include('frontend.'.get_setting('homepage_select').'.partials.address_modal')
 @endsection
 
 @section('script')
     @if (get_setting('google_map') == 1)
-        @include('frontend.partials.google_map')
+        @include('frontend.'.get_setting('homepage_select').'.partials.google_map')
     @endif
 @endsection

@@ -13,7 +13,7 @@
 	@can('add_website_page')
 		<div class="card-header">
 			<h6 class="mb-0 fw-600">{{ translate('All Pages') }}</h6>
-			<a href="{{ route('custom-pages.create') }}" class="btn btn-primary">{{ translate('Add New Page') }}</a>
+			<a href="{{ route('custom-pages.create') }}" class="btn btn-circle btn-info">{{ translate('Add New Page') }}</a>
 		</div>
 	@endcan
 	<div class="card-body">
@@ -27,18 +27,11 @@
             </tr>
         </thead>
         <tbody>
-        	@foreach (\App\Models\Page::all() as $key => $page)
+        	@foreach ($page as $key => $page)
         	<tr>
         		<td>{{ $key+1 }}</td>
-        		
-				@if($page->type == 'home_page')
-        			<td><a href="{{ route('custom-pages.show_custom_page', $page->slug) }}" class="text-reset">{{ $page->getTranslation('title') }}</a></td>
-					<td>{{ route('home') }}</td>
-				@else
-        			<td><a href="{{ route('custom-pages.show_custom_page', $page->slug) }}" class="text-reset">{{ $page->getTranslation('title') }}</a></td>
-					<td>{{ route('home') }}/{{ $page->slug }}</td>
-				@endif
-				
+				<td><a href="{{ route('custom-pages.show_custom_page', $page->slug) }}" class="text-reset">{{ $page->getTranslation('title') }}</a></td>
+				<td>{{ route('home') }}/{{ $page->slug }}</td>
         		<td class="text-right">
 					@can('edit_website_page')
 						@if($page->type == 'home_page')

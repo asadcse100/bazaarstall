@@ -103,6 +103,11 @@
     <style>
         :root{
             --blue: #3490f3;
+            --hov-blue: #2e7fd6;
+            --soft-blue: rgba(0, 123, 255, 0.15);
+            --secondary-base: {{ get_setting('secondary_base_color', '#ffc519') }};
+            --hov-secondary-base: {{ get_setting('secondary_base_hov_color', '#dbaa17') }};
+            --soft-secondary-base: {{ hex2rgba(get_setting('secondary_base_color', '#ffc519'), 0.15) }};
             --gray: #9d9da6;
             --gray-dark: #8d8d8d;
             --secondary: #919199;
@@ -154,6 +159,11 @@
         .modal-content {
             border: 0 !important;
             border-radius: 0 !important;
+        }
+
+        .tagify.tagify--focus{
+            border-width: 2px;
+            border-color: var(--primary);
         }
 
         #map{
@@ -226,10 +236,19 @@
         @include('frontend.inc.nav')
 
         @yield('content')
-
+        
+        <!-- footer -->
         @include('frontend.inc.footer')
 
     </div>
+
+    <!-- Floating Buttons -->
+    @include('frontend.inc.floating_buttons')
+
+    @if (env("DEMO_MODE") == "On")
+        <!-- demo nav -->
+        @include('frontend.inc.demo_nav')
+    @endif
 
     <!-- cookies agreement -->
     @if (get_setting('show_cookies_agreement') == 'on')
@@ -277,9 +296,9 @@
         </div>
     @endif
 
-    @include('frontend.partials.modal')
+    @include('frontend.'.get_setting('homepage_select').'.partials.modal')
     
-    @include('frontend.partials.account_delete_modal')
+    @include('frontend.'.get_setting('homepage_select').'.partials.account_delete_modal')
 
     <div class="modal fade" id="addToCart">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-zoom product-modal" id="modal-size" role="document">
@@ -337,6 +356,51 @@
     </script>
 
     <script>
+        @if (Route::currentRouteName() == 'home' || Route::currentRouteName() == '/')
+            
+            $.post('{{ route('home.section.featured') }}', {
+                _token: '{{ csrf_token() }}'
+            }, function(data) {
+                $('#section_featured').html(data);
+                AIZ.plugins.slickCarousel();
+            });
+
+            $.post('{{ route('home.section.todays_deal') }}', {
+                _token: '{{ csrf_token() }}'
+            }, function(data) {
+                $('#todays_deal').html(data);
+                AIZ.plugins.slickCarousel();
+            });
+
+            $.post('{{ route('home.section.best_selling') }}', {
+                _token: '{{ csrf_token() }}'
+            }, function(data) {
+                $('#section_best_selling').html(data);
+                AIZ.plugins.slickCarousel();
+            });
+
+            $.post('{{ route('home.section.newest_products') }}', {
+                _token: '{{ csrf_token() }}'
+            }, function(data) {
+                $('#section_newest').html(data);
+                AIZ.plugins.slickCarousel();
+            });
+
+            $.post('{{ route('home.section.auction_products') }}', {
+                _token: '{{ csrf_token() }}'
+            }, function(data) {
+                $('#auction_products').html(data);
+                AIZ.plugins.slickCarousel();
+            });
+
+            $.post('{{ route('home.section.home_categories') }}', {
+                _token: '{{ csrf_token() }}'
+            }, function(data) {
+                $('#section_home_categories').html(data);
+                AIZ.plugins.slickCarousel();
+            });
+        @endif
+
         $(document).ready(function() {
             $('.category-nav-element').each(function(i, el) {
 
@@ -707,7 +771,7 @@
                     $('.email-form-group').removeClass('d-none');
                     $('input[name=phone]').val(null);
                     isPhoneShown = false;
-                    $(el).html('*{{ translate('Use Phone Instead') }}');
+                    $(el).html('*{{ translate('Use Phone Number Instead') }}');
                 } else {
                     $('.phone-form-group').removeClass('d-none');
                     $('.email-form-group').addClass('d-none');
@@ -716,7 +780,8 @@
                     $(el).html('<i>*{{ translate('Use Email Instead') }}</i>');
                 }
             }
-        </script> @endif
+        </script> 
+    @endif
 
     <script>
         var acc = document.getElementsByClassName("aiz-accordion-heading");
@@ -733,6 +798,62 @@
             });
         }
     </script>
+
+    <script>
+        function showFloatingButtons() {
+            document.querySelector('.floating-buttons-section').classList.toggle('show');;
+        }
+    </script>
+
+    @if (env("DEMO_MODE") == "On")
+        <script>
+            var demoNav = document.querySelector('.aiz-demo-nav');
+            var menuBtn = document.querySelector('.aiz-demo-nav-toggler');
+            var lineOne = document.querySelector('.aiz-demo-nav-toggler .aiz-demo-nav-btn .line--1');
+            var lineTwo = document.querySelector('.aiz-demo-nav-toggler .aiz-demo-nav-btn .line--2');
+            var lineThree = document.querySelector('.aiz-demo-nav-toggler .aiz-demo-nav-btn .line--3');
+            menuBtn.addEventListener('click', () => {
+                toggleDemoNav();
+            });
+
+            function toggleDemoNav() {
+                // demoNav.classList.toggle('show');
+                demoNav.classList.toggle('shadow-none');
+                lineOne.classList.toggle('line-cross');
+                lineTwo.classList.toggle('line-fade-out');
+                lineThree.classList.toggle('line-cross');
+                if ($('.aiz-demo-nav-toggler').hasClass('show')) {
+                    $('.aiz-demo-nav-toggler').removeClass('show');
+                    demoHideOverlay();
+                }else{
+                    $('.aiz-demo-nav-toggler').addClass('show');
+                    demoShowOverlay();
+                }
+            }
+
+            $('.aiz-demos').click(function(e){
+                if (!e.target.closest('.aiz-demos .aiz-demo-content')) {
+                    toggleDemoNav();
+                }
+            });
+
+            function demoShowOverlay(){
+                $('.top-banner').removeClass('z-1035').addClass('z-1');
+                $('.top-navbar').removeClass('z-1035').addClass('z-1');
+                $('header').removeClass('z-1020').addClass('z-1');
+                $('.aiz-demos').addClass('show');
+            }
+
+            function demoHideOverlay(cls=null){
+                if($('.aiz-demos').hasClass('show')){
+                    $('.aiz-demos').removeClass('show');
+                    $('.top-banner').delay(800).removeClass('z-1').addClass('z-1035');
+                    $('.top-navbar').delay(800).removeClass('z-1').addClass('z-1035');
+                    $('header').delay(800).removeClass('z-1').addClass('z-1020');
+                }
+            }
+        </script>
+    @endif
 
     @yield('script')
 
