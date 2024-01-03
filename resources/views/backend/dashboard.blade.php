@@ -14,20 +14,20 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <h6 class="mb-0 fs-14">{{ translate('Category wise product sale') }}</h6>
+                <h6 class="mb-0 fs-14">{{ translate('Category wise product stock') }}</h6>
             </div>
             <div class="card-body">
-                <canvas id="graph-1" class="w-100" height="500"></canvas>
+                <canvas id="graph-2" class="w-100" height="500"></canvas>
             </div>
         </div>
     </div>
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <h6 class="mb-0 fs-14">{{ translate('Category wise product stock') }}</h6>
+                <h6 class="mb-0 fs-14">{{ translate('Category wise product sale') }}</h6>
             </div>
             <div class="card-body">
-                <canvas id="graph-2" class="w-100" height="500"></canvas>
+                <canvas id="graph-1" class="w-100" height="500"></canvas>
             </div>
         </div>
     </div>
