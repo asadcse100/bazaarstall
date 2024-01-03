@@ -59,18 +59,6 @@ use App\Http\Controllers\Payment\AuthorizenetController;
   |
  */
 
-Route::controller(DemoController::class)->group(function () {
-    Route::get('/demo/cron_1', 'cron_1');
-    Route::get('/demo/cron_2', 'cron_2');
-    Route::get('/convert_assets', 'convert_assets');
-    Route::get('/convert_category', 'convert_category');
-    Route::get('/convert_tax', 'convertTaxes');
-    Route::get('/set-category', 'setCategoryToProductCategory');
-    Route::get('/insert_product_variant_forcefully', 'insert_product_variant_forcefully');
-    Route::get('/update_seller_id_in_orders/{id_min}/{id_max}', 'update_seller_id_in_orders');
-    Route::get('/migrate_attribute_values', 'migrate_attribute_values');
-});
-
 Route::get('/refresh-csrf', function () {
     return csrf_token();
 });

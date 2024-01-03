@@ -60,13 +60,6 @@ use App\Http\Controllers\ZoneController;
   |
  */
 //Update Routes
-Route::controller(UpdateController::class)->group(function () {
-    Route::post('/update', 'step0')->name('update');
-    Route::get('/update/step1', 'step1')->name('update.step1');
-    Route::get('/update/step2', 'step2')->name('update.step2');
-    Route::get('/update/step3', 'step3')->name('update.step3');
-    Route::post('/purchase_code', 'purchase_code')->name('update.code');
-});
 
 Route::get('/admin', [AdminController::class, 'admin_dashboard'])->name('admin.dashboard')->middleware(['auth', 'admin', 'prevent-back-history']);
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-back-history']], function() {
@@ -222,6 +215,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
 
         // Order Configuration
         Route::get('/order-configuration', 'order_configuration')->name('order_configuration.index');
+        Route::get('/courier-setup', 'courier_setup')->name('courier_setup.index');
     });
 
 

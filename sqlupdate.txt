@@ -1,0 +1,5 @@
+INSERT INTO `business_settings` (`id`, `type`, `value`, `lang`, `created_at`, `updated_at`) VALUES (NULL, 'steadfast_api_key', NULL, 'en', current_timestamp(), current_timestamp()), (NULL, 'steadfast_secret_key', NULL, 'en', current_timestamp(), current_timestamp()), (NULL, 'steadfast_content_type', 'application/json', 'en', current_timestamp(), current_timestamp());
+INSERT INTO `permissions` (`id`, `name`, `section`, `guard_name`, `created_at`, `updated_at`) VALUES (NULL, 'steadfast_carrier_setup', NULL, '', current_timestamp(), NULL);
+
+UPDATE `permissions` SET `name` = 'courier_setup' WHERE `permissions`.`id` = 215;
+

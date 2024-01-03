@@ -1310,6 +1310,13 @@
                                     </a>
                                 </li>
                             @endcan
+                            @can('courier_setup')
+                                <li class="aiz-side-nav-item">
+                                    <a href="{{route('courier_setup.index')}}" class="aiz-side-nav-link">
+                                        <span class="aiz-side-nav-text">{{translate('Courier Setup')}}</span>
+                                    </a>
+                                </li>
+                            @endcan
                             @can('order_configuration')
                                 <li class="aiz-side-nav-item">
                                     <a href="{{ route('order_configuration.index') }}" class="aiz-side-nav-link">
@@ -1442,6 +1449,7 @@
                                                 </a>
                                             </li>
                                         @endcan
+                                        
                                     </ul>
                                 </li>
                             @endif

@@ -19,6 +19,7 @@ class BusinessSettingsController extends Controller
         $this->middleware(['permission:smtp_settings'])->only('smtp_settings');
         $this->middleware(['permission:payment_methods_configurations'])->only('payment_method');
         $this->middleware(['permission:order_configuration'])->only('order_configuration');
+        $this->middleware(['permission:steadfast_courier'])->only('steadfast_courier');
         $this->middleware(['permission:file_system_&_cache_configuration'])->only('file_system');
         $this->middleware(['permission:social_media_logins'])->only('social_login');
         $this->middleware(['permission:facebook_chat'])->only('facebook_chat');
@@ -518,6 +519,10 @@ class BusinessSettingsController extends Controller
 
     public function order_configuration(){
         return view('backend.setup_configurations.order_configuration.index');
+    }
+
+    public function courier_setup(){
+        return view('backend.setup_configurations.courier_setup.index');
     }
 
 }
