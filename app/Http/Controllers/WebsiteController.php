@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Page;
 use Illuminate\Http\Request;
 
 class WebsiteController extends Controller
@@ -13,6 +14,8 @@ class WebsiteController extends Controller
         $this->middleware(['permission:footer_setup'])->only('footer');
         $this->middleware(['permission:view_all_website_pages'])->only('pages');
         $this->middleware(['permission:website_appearance'])->only('appearance');
+        $this->middleware(['permission:select_homepage'])->only('select_homepage');
+        $this->middleware(['permission:authentication_layout_settings'])->only('authentication_layout_settings');
     }
 
     public function header(Request $request)
@@ -26,10 +29,20 @@ class WebsiteController extends Controller
     }
     public function pages(Request $request)
     {
-        return view('backend.website_settings.pages.index');
+        $page = Page::where('type', '!=', 'home_page')->get();
+        return view('backend.website_settings.pages.index', compact('page'));
     }
     public function appearance(Request $request)
     {
         return view('backend.website_settings.appearance');
+    }
+    public function select_homepage(Request $request)
+    {
+        return view('backend.website_settings.select_homepage');
+    }
+
+    public function authentication_layout_settings(Request $request)
+    {
+        return view('backend.website_settings.authentication_layout_settings');
     }
 }
