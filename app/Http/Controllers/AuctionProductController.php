@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Product;
-use App\ProductTranslation;
-use App\ProductStock;
-use App\Category;
-use App\FlashDealProduct;
-use App\ProductTax;
-use App\Attribute;
-use App\AttributeValue;
-use App\Cart;
-use App\Language;
-use App\Order;
-use App\User;
+use App\Models\Product;
+use App\Models\ProductTranslation;
+use App\Models\ProductStock;
+use App\Models\Category;
+use App\Models\FlashDealProduct;
+use App\Models\ProductTax;
+use App\Models\Attribute;
+use App\Models\AttributeValue;
+use App\Models\Cart;
+use App\Models\Language;
+use App\Models\Order;
+use App\Models\User;
 use Auth;
-use App\SubSubCategory;
+use App\Models\SubSubCategory;
 use Session;
 use Carbon\Carbon;
 use ImageOptimizer;
@@ -54,7 +54,17 @@ class AuctionProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function product_create_admin()
+    {
+        $categories = Category::where('parent_id', 0)
+            ->where('digital', 0)
+            ->with('childrenCategories')
+            ->get();
+
+        return view('auction.auction_products.create', compact('categories'));
+    }
+
+    public function product_create_seller()
     {
         $categories = Category::where('parent_id', 0)
             ->where('digital', 0)

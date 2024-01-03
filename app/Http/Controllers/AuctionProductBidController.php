@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-Use App\AuctionProductBid;
-Use App\Product;
+use App\Models\AuctionProductBid;
+use App\Models\Product;
 use Auth;
 use DB;
 
