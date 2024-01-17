@@ -201,6 +201,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin', 'prevent-ba
         Route::post('/payment_method_update', 'payment_method_update')->name('payment_method.update');
         Route::post('/google_analytics', 'google_analytics_update')->name('google_analytics.update');
         Route::post('/google_recaptcha', 'google_recaptcha_update')->name('google_recaptcha.update');
+        Route::post('/steadfast_courier', 'steadfast_courier')->name('steadfast_courier.update');
         Route::post('/google-map', 'google_map_update')->name('google-map.update');
         Route::post('/google-firebase', 'google_firebase_update')->name('google-firebase.update');
 

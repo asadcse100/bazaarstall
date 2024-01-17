@@ -155,5 +155,10 @@ Route::group(['namespace' => 'App\Http\Controllers\Seller', 'prefix' => 'seller'
         Route::get('/all-notification', 'index')->name('all-notification');
     });
 
+    // PlugIn
+    Route::controller(PluginController::class)->group(function () {
+        Route::get('plugin/index', 'index')->name('seller.plugin.index');
+    });
+
 });
 

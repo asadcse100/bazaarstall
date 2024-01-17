@@ -525,4 +525,36 @@ class BusinessSettingsController extends Controller
         return view('backend.setup_configurations.courier_setup.index');
     }
 
+    public function steadfast_courier(Request $request)
+    {
+        foreach ($request->types as $key => $type) {
+            $this->overWriteEnvFile($type, $request[$type]);
+        }
+
+        $steadfast_courier = BusinessSetting::where('type', 'steadfast_courier')->first();
+        $steadfast_auto_order_place = BusinessSetting::where('type', 'steadfast_auto_order_place')->first();
+
+        if ($request->has('steadfast_courier')) {
+            $steadfast_courier->value = 1;
+            $steadfast_courier->save();
+        }
+        else{
+            $steadfast_courier->value = 0;
+            $steadfast_courier->save();
+        }
+
+        if ($request->has('steadfast_auto_order_place')) {
+            $steadfast_auto_order_place->value = 1;
+            $steadfast_auto_order_place->save();
+        }
+        else{
+            $steadfast_auto_order_place->value = 0;
+            $steadfast_auto_order_place->save();
+        }
+            Artisan::call('cache:clear');
+
+            flash(translate("Settings updated successfully"))->success();
+            return back();
+    }
+
 }
