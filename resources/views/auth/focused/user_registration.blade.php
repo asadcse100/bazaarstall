@@ -141,11 +141,7 @@
                                                 </li>
                                             @endif
                                             @if(get_setting('google_login') == 1)
-                                                <!-- <li class="list-inline-item">
-                                                    <a href="{{ route('social.login', ['provider' => 'google']) }}" class="google">
-                                                        <i class="lab la-google"></i>
-                                                    </a>
-                                                </li> -->
+
                                                 <button class="btn btn-outline-info">
                                                 <li class="list-inline-item">
                                                         <a href="{{ route('social.login', ['provider' => 'google']) }}" class="google">
