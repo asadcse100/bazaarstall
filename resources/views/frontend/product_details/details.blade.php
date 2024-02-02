@@ -286,7 +286,7 @@
                             <!-- Discount Price -->
                             <strong class="fs-16 fw-700 text-primary">
                                 {{ home_discounted_price($detailedProduct) }} 
-                                @if ($detailedProduct->external_link != null)
+                                @if ($detailedProduct->external_link == null)
                                 /
                                 (৳{{ $detailedProduct->unit_price*100 }})
                                 @endif
