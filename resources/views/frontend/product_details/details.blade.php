@@ -285,7 +285,8 @@
                         <div class="d-flex align-items-center">
                             <!-- Discount Price -->
                             <strong class="fs-16 fw-700 text-primary">
-                                {{ home_discounted_price($detailedProduct) }}
+                                {{ home_discounted_price($detailedProduct) }} /
+                                (৳{{ $detailedProduct->unit_price*100 }})
                             </strong>
                             <!-- Unit -->
                             @if ($detailedProduct->unit != null)
