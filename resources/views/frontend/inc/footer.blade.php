@@ -115,31 +115,31 @@
                     <ul class="list-inline social colored mb-4">
                         @if (!empty(get_setting('facebook_link')))
                             <li class="list-inline-item ml-2 mr-2">
-                                <a href="{{ get_setting('facebook_link') }}" target="_blank"
+                                <a href="{{ get_setting('facebook_link') }}" rel="noreferrer nofollow" target="_blank"
                                     class="facebook"><i class="lab la-facebook-f"></i></a>
                             </li>
                         @endif
                         @if (!empty(get_setting('twitter_link')))
                             <li class="list-inline-item ml-2 mr-2">
-                                <a href="{{ get_setting('twitter_link') }}" target="_blank"
+                                <a href="{{ get_setting('twitter_link') }}" rel="noreferrer nofollow" target="_blank"
                                     class="twitter"><i class="lab la-twitter"></i></a>
                             </li>
                         @endif
                         @if (!empty(get_setting('instagram_link')))
                             <li class="list-inline-item ml-2 mr-2">
-                                <a href="{{ get_setting('instagram_link') }}" target="_blank"
+                                <a href="{{ get_setting('instagram_link') }}" rel="noreferrer nofollow" target="_blank"
                                     class="instagram"><i class="lab la-instagram"></i></a>
                             </li>
                         @endif
                         @if (!empty(get_setting('youtube_link')))
                             <li class="list-inline-item ml-2 mr-2">
-                                <a href="{{ get_setting('youtube_link') }}" target="_blank"
+                                <a href="{{ get_setting('youtube_link') }}" rel="noreferrer nofollow" target="_blank"
                                     class="youtube"><i class="lab la-youtube"></i></a>
                             </li>
                         @endif
                         @if (!empty(get_setting('linkedin_link')))
                             <li class="list-inline-item ml-2 mr-2">
-                                <a href="{{ get_setting('linkedin_link') }}" target="_blank"
+                                <a href="{{ get_setting('linkedin_link') }}" rel="noreferrer nofollow" target="_blank"
                                     class="linkedin"><i class="lab la-linkedin-in"></i></a>
                             </li>
                         @endif
