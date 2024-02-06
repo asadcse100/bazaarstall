@@ -243,11 +243,6 @@
                             </li>
                         @endif
                         <li class="mb-2">
-                            <a class="fs-13 text-soft-light animate-underline-white" href="{{ route('purchase_history.index') }}">
-                                {{ translate('Order History') }}
-                            </a>
-                        </li>
-                        <li class="mb-2">
                             <a class="fs-13 text-soft-light animate-underline-white" href="{{ route('wishlists.index') }}">
                                 {{ translate('My Wishlist') }}
                             </a>
