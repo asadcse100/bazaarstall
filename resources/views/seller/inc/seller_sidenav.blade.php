@@ -140,9 +140,6 @@
                         <a href="#" class="aiz-side-nav-link">
                             <i class="las la-tasks aiz-side-nav-icon"></i>
                             <span class="aiz-side-nav-text">{{ translate('POS System') }}</span>
-                            @if (env('DEMO_MODE') == 'On')
-                                <span class="badge badge-inline badge-danger">Addon</span>
-                            @endif
                             <span class="aiz-side-nav-arrow"></span>
                         </a>
                         <ul class="aiz-side-nav-list level-2">
@@ -151,11 +148,6 @@
                                     class="aiz-side-nav-link {{ areActiveRoutes(['poin-of-sales.seller_index']) }}">
                                     <i class="las la-fax aiz-side-nav-icon"></i>
                                     <span class="aiz-side-nav-text">{{ translate('POS Manager') }}</span>
-                                </a>
-                            </li>
-                            <li class="aiz-side-nav-item">
-                                <a href="{{ route('pos.configuration') }}" class="aiz-side-nav-link">
-                                    <span class="aiz-side-nav-text">{{ translate('POS Configuration') }}</span>
                                 </a>
                             </li>
                         </ul>
