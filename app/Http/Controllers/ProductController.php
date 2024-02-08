@@ -391,6 +391,28 @@ class ProductController extends Controller
         return 1;
     }
 
+    public function bulk_product_publish(Request $request)
+    {
+        if ($request->id) {
+            foreach ($request->id as $product_id) {
+                Product::where('id', $product_id)->update(['published' => 1]);
+            }
+        }
+
+        return 1;
+    }
+
+    public function bulk_product_unpublish(Request $request)
+    {
+        if ($request->id) {
+            foreach ($request->id as $product_id) {
+                Product::where('id', $product_id)->update(['published' => 0]);
+            }
+        }
+
+        return 1;
+    }
+
     /**
      * Duplicates the specified resource from storage.
      *

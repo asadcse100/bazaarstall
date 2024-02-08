@@ -3,3 +3,6 @@ INSERT INTO `permissions` (`id`, `name`, `section`, `guard_name`, `created_at`, 
 
 UPDATE `permissions` SET `name` = 'courier_setup' WHERE `permissions`.`id` = 215;
 
+
+ALTER TABLE `shops` ADD `fav_icon` VARCHAR(255) NULL DEFAULT NULL AFTER `logo`;
+

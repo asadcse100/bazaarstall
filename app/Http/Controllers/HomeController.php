@@ -324,7 +324,7 @@ class HomeController extends Controller
                 abort(404);
             }
             if ($shop->verification_status != 0) {
-                return view('frontend.seller_shop', compact('shop'));
+                return view('seller.frontend.index', compact('shop'));
             } else {
                 return view('frontend.seller_shop_without_verification', compact('shop'));
             }
@@ -393,10 +393,10 @@ class HomeController extends Controller
 
                 $products = $products->paginate(24)->appends(request()->query());
 
-                return view('frontend.seller_shop', compact('shop', 'type', 'products', 'selected_categories', 'min_price', 'max_price', 'brand_id', 'sort_by', 'rating'));
+                return view('seller.frontend.index', compact('shop', 'type', 'products', 'selected_categories', 'min_price', 'max_price', 'brand_id', 'sort_by', 'rating'));
             }
 
-            return view('frontend.seller_shop', compact('shop', 'type'));
+            return view('seller.frontend.index', compact('shop', 'type'));
         }
         abort(404);
     }

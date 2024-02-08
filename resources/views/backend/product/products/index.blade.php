@@ -31,6 +31,10 @@
                         {{translate('Bulk Action')}}
                     </button>
                     <div class="dropdown-menu dropdown-menu-right">
+                    <a class="dropdown-item confirm-alert" href="javascript:void(0)"  data-target="#bulk-publish-modal"> {{translate('Publish selection')}}</a>
+
+                    <a class="dropdown-item confirm-alert" href="javascript:void(0)"  data-target="#bulk-unpublish-modal"> {{translate('Unpublish selection')}}</a>
+
                         <a class="dropdown-item confirm-alert" href="javascript:void(0)"  data-target="#bulk-delete-modal"> {{translate('Delete selection')}}</a>
                     </div>
                 </div>
@@ -236,6 +240,8 @@
     @include('modals.delete_modal')
     <!-- Bulk Delete modal -->
     @include('modals.bulk_delete_modal')
+    @include('modals.bulk_publish_modal')
+    @include('modals.bulk_unpublish_modal')
 @endsection
 
 
@@ -343,6 +349,46 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 url: "{{route('bulk-product-delete')}}",
+                type: 'POST',
+                data: data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if(response == 1) {
+                        location.reload();
+                    }
+                }
+            });
+        }
+
+        function bulk_publish() {
+            var data = new FormData($('#sort_products')[0]);
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "{{route('bulk-product-publish')}}",
+                type: 'POST',
+                data: data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if(response == 1) {
+                        location.reload();
+                    }
+                }
+            });
+        }
+
+        function bulk_unpublish() {
+            var data = new FormData($('#sort_products')[0]);
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "{{route('bulk-product-unpublish')}}",
                 type: 'POST',
                 data: data,
                 cache: false,
