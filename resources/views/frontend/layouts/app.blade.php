@@ -256,7 +256,9 @@
     </div>
 
     <!-- Floating Buttons -->
+    @if('hide' == 1)
     @include('frontend.inc.floating_buttons')
+    @endif
 
     @if (env("DEMO_MODE") == "On")
         <!-- demo nav -->

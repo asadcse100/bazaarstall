@@ -12273,7 +12273,7 @@ input[type="color"]::-webkit-color-swatch {
     z-index: 1046;
     position: fixed;
     top: 50%;
-    left: 0;
+    right: 0; /* Adjusted from 'left: 0' */
     padding: 30px;
     transform: translate(0%, -50%);
     transition: all 0.4s;

@@ -283,6 +283,13 @@
                     </div>
                     <div class="col-sm-10">
                         <div class="d-flex align-items-center">
+
+                        @if ($detailedProduct->external_link != null)
+                        <a type="button" class="btn btn-primary buy-now fw-600 add-to-cart px-4 rounded-0"
+                            href="{{ $detailedProduct->external_link }}">
+                            <i class="la la-share"></i> {{ translate($detailedProduct->external_link_btn) }}
+                        </a>
+                        @else
                             <!-- Discount Price -->
                             <strong class="fs-16 fw-700 text-primary">
                                 {{ home_discounted_price($detailedProduct) }} 
@@ -323,6 +330,7 @@
                                         {{ $detailedProduct->earn_point }}</small>
                                 </div>
                             @endif
+                        @endif
                         </div>
                     </div>
                 </div>
@@ -434,6 +442,7 @@
             @endif
 
             <!-- Total Price -->
+            @if ($detailedProduct->external_link == null)
             <div class="row no-gutters pb-3 d-none" id="chosen_price_div">
                 <div class="col-sm-2">
                     <div class="text-secondary fs-14 fw-400 mt-1">{{ translate('Total Price') }}</div>
@@ -446,6 +455,7 @@
                     </div>
                 </div>
             </div>
+            @endif
 
         </form>
     @endif
