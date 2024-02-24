@@ -102,9 +102,11 @@
                     </div>
                 @endif
                 <!-- price -->
+                @if($product->external_link == null)
                 <div class="">
                     <span class="fw-700 text-primary">{{ home_discounted_base_price($product) }}</span>
                 </div>
+                @endif
             @endif
             @if ($product->auction_product == 1)
                 <!-- Bid Amount -->

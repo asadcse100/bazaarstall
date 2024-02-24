@@ -37,12 +37,14 @@
                                 <div class="product-name text-truncate fs-14 mb-5px">
                                     {{  $product->getTranslation('name')  }}
                                 </div>
+                                @if($product->external_link == null)
                                 <div class="">
                                     @if(home_base_price($product) != home_discounted_base_price($product))
                                         <del class="opacity-60 fs-15">{{ home_base_price($product) }}</del>
                                     @endif
                                     <span class="fw-600 fs-16 text-primary">{{ home_discounted_base_price($product) }}</span>
                                 </div>
+                                @endif
                             </div>
                         </div>
                     </a>
