@@ -44,12 +44,14 @@
                                                 onerror="this.onerror=null;this.src='{{ static_asset('assets/img/placeholder.jpg') }}';">
                                         </div>
                                         <!-- Price -->
+                                        @if($product->external_link == null)
                                         <div class="fs-14 mt-3 text-center">
                                             <span class="d-block {{ $todays_deal_banner_text_color }} fw-700">{{ home_discounted_base_price($product) }}</span>
                                             @if(home_base_price($product) != home_discounted_base_price($product))
                                                 <del class="d-block text-secondary fw-400">{{ home_base_price($product) }}</del>
                                             @endif
                                         </div>
+                                        @endif
                                     </a>
                                 </div>
                             @endforeach
